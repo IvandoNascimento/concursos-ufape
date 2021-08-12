@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Inscricao;
 use App\Models\User;
-use App\Models\Concurso;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -103,15 +102,18 @@ class InscricaoPolicy
      * @return mixed
      */
 
-    public function showDocumentos(User $user, Inscricao $inscricao) {
+    public function showDocumentos(User $user, Inscricao $inscricao)
+    {
         return $inscricao->users_id == $user->id || $user->role == "chefeSetorConcursos" || $user->role == "admin";
     }
 
-    public function enviarDocumentos(User $user, Inscricao $inscricao) {
+    public function enviarDocumentos(User $user, Inscricao $inscricao)
+    {
         return $inscricao->users_id == $user->id && $this->dentroDoPeriodo($inscricao) || $user->role == "chefeSetorConcursos" || $user->role == "admin";
     }
 
-    private function dentroDoPeriodo(Inscricao $inscricao) {
+    private function dentroDoPeriodo(Inscricao $inscricao)
+    {
         $concurso = $inscricao->concurso;
         return $concurso->data_inicio_envio_doc <= now() && now() <= $concurso->data_fim_envio_doc;
     }
