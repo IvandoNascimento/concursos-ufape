@@ -187,7 +187,7 @@ class ConcursoController extends Controller
     public function showCandidatos(Request $request)
     {
         $concurso = Concurso::find($request->concurso_id);
-
+        $this->authorize('viewCandidatos', $concurso);
         if ($request->filtro != null) {
             $inscricoes = $this->filtrarInscricoes($request);
         } else {
@@ -200,6 +200,7 @@ class ConcursoController extends Controller
     public function inscricaoCandidato(Request $request)
     {
         $inscricao = Inscricao::find($request->inscricao_id);
+        $this->authorize('view', $inscricao);
         $candidato = $inscricao->user->candidato;
         $endereco = $inscricao->user->endereco;
 
@@ -210,6 +211,8 @@ class ConcursoController extends Controller
     public function aprovarReprovarCandidato(Request $request)
     {
         $inscricao = Inscricao::find($request->inscricao_id);
+        $this->authorize('update', $inscricao);
+        
         $concurso = $inscricao->concurso;
         $mensagem = "";
 
@@ -228,13 +231,18 @@ class ConcursoController extends Controller
 
     public function avaliarDocumentosCandidato(Request $request)
     {
-        $arquivos = Arquivo::where('inscricoes_id', $request->inscricao_id)->first();
         $inscricao = Inscricao::find($request->inscricao_id);
+        $this->authorize('viewDocumentos', $inscricao);
+
+        $arquivos = Arquivo::where('inscricoes_id', $request->inscricao_id)->first();
         return view('concurso.avalia-documentos-candidato')->with(['arquivos' => $arquivos, 'inscricao' => $inscricao]);
     }
 
     public function savePontuacaoDocumentosCandidato(Request $request)
     {
+        $inscricao = Inscricao::find($request->inscricao_id);
+        $this->authorize('avaliar', $inscricao);
+        $concurso = $inscricao->concurso;
         $avaliacao = Avaliacao::where("inscricoes_id", $request->inscricao_id)->first();
 
         if (!$avaliacao) {
@@ -245,8 +253,6 @@ class ConcursoController extends Controller
                 'ficha_avaliacao' => 'file|mimes:pdf|max:2048'
             ], Avaliacao::$messages)->validate();
         }
-
-        $inscricao = Inscricao::find($request->inscricao_id);
 
         if ($avaliacao && $request->ficha_avaliacao) {
             Storage::delete('public/' . $avaliacao->ficha_avaliacao);
@@ -273,11 +279,13 @@ class ConcursoController extends Controller
             ]);
         }
 
-        return redirect()->route('concurso.index')->with('mensage', 'Pontuação salva e ficha de avaliação salva com sucesso!');
+        return redirect(route('show.candidatos.concurso', $concurso->id))->with('mensage', 'Pontuação salva e ficha de avaliação salva com sucesso!');
     }
 
     public function showResultadoFinal(Request $request)
     {
+        $concurso = Concurso::find($request->concurso_id);
+        $this->authorize('viewCandidatos', $concurso);
         $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->get();
         $avaliacoes = Avaliacao::whereIn('inscricoes_id', $inscricoes->pluck('id'))->orderBy('nota', 'desc')->get();
         return view('concurso.resultado-final', compact('avaliacoes'));

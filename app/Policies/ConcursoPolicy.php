@@ -130,6 +130,26 @@ class ConcursoPolicy
         return $this->ehDonoDoConcurso($user, $concurso);
     }
 
+    /**
+    * Regra para visualizar os candidatos de um concurso
+    *
+    * @param  \App\Models\User  $user
+    * @param  \App\Models\Inscricao  $inscricao
+    * @return mixed
+    */
+    public function viewCandidatos(User $user, Concurso $concurso)
+    {
+        return $this->ehDonoDoConcurso($user, $concurso) || $concurso->chefeDaBanca->contains('id', $user->id);
+    }
+
+    // FUNÇÕES PRIVADAS
+    /**
+    * Regra que determina se o usuário é dono do concurso
+    *
+    * @param  \App\Models\User  $user
+    * @param  \App\Models\Inscricao  $inscricao
+    * @return mixed
+    */
     private function ehDonoDoConcurso(User $user, Concurso $concurso)
     {
         return $concurso->users_id == $user->id;

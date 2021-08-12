@@ -123,9 +123,18 @@ class AdminController extends Controller
     {
         $concurso = Concurso::find($id);
         $this->authorize('operacoesUserBanca', $concurso);
-        $usuarios = User::where('role', User::ROLE_ENUM["presidenteBancaExaminadora"])->get();
+        
+        $usuariosMembros = collect();
+        $membrosDoConcurso = $concurso->chefeDaBanca()->orderBy('nome')->get();
+        $users = User::where('role', User::ROLE_ENUM["presidenteBancaExaminadora"])->orderBy('nome')->get();
 
-        return view('usuario.banca_examinadora', compact('usuarios', 'concurso'));
+        foreach ($users as $user) {
+            if (!$membrosDoConcurso->contains('id', $user->id)) {
+                $usuariosMembros->push($user);
+            }
+        }
+
+        return view('usuario.banca_examinadora', compact('usuariosMembros', 'membrosDoConcurso', 'concurso'));
     }
 
     public function createUserBanca(Request $request, $id)
@@ -154,5 +163,20 @@ class AdminController extends Controller
         Notification::send($usuario, new UsuarioCadastradoNotification($usuario));
 
         return redirect()->back()->with(['success' => 'Usuário cadastrado com sucesso.']);
+    }
+
+    public function definirPresidente(Request $request) {
+        $concurso = Concurso::find($request->concurso); 
+        $this->authorize('operacoesUserBanca', $concurso);
+
+        foreach ($concurso->chefeDaBanca as $user) {
+            if ($request->presidente == $user->id) {
+                $concurso->chefeDaBanca()->updateExistingPivot($user->id, ['chefe' => true]);
+            } else {
+                $concurso->chefeDaBanca()->updateExistingPivot($user->id, ['chefe' => false]);
+            }
+        }
+        
+        return redirect()->back()->with(['success' => 'Presidente da banca examinadora salvo com sucesso.']);
     }
 }

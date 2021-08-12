@@ -6,9 +6,20 @@
             <div class="card shadow bg-white style_card_container">
                 <div class="card-header d-flex justify-content-between bg-white" id="style_card_container_header">
                     <h6 class="style_card_container_header_titulo">Etapa - Prova de Títulos</h6>
-                    @if($inscricao->concurso->users_id == auth()->user()->id)
-                        <a class="btn btn-primary" href="{{route('envio.documentos.inscricao', $inscricao->id)}}" style="margin-top: 10px;">Enviar documentos</a>
-                    @endif
+                    <div class="form-group">
+                        @if($inscricao->concurso->users_id == auth()->user()->id)
+                            <a class="btn btn-primary" href="{{route('envio.documentos.inscricao', $inscricao->id)}}" style="margin-top: 10px;">Enviar documentos</a>
+                        @endif
+                        @if (!$arquivos)
+                            <button class="btn btn-danger" style="margin-top: 10px;" disabled>
+                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px"> Nenhum documento enviado
+                            </button>
+                        @else
+                            <a class="btn btn-primary" href="{{route('baixar.documentos.candidato', $inscricao->id)}}" style="margin-top: 10px;">
+                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px"> Baixar documentos
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -277,7 +288,7 @@
                                                 @if ($inscricao->avaliacao && !$inscricao->avaliacao->nota)
                                                     required
                                                 @endif
-                                                @if($inscricao->concurso->users_id == auth()->user()->id)
+                                                @if($inscricao->concurso->users_id == auth()->user()->id || $inscricao->concurso->chefeDaBanca()->where([['users_id', auth()->user()->id], ['chefe', false]])->get()->count() > 0)
                                                     disabled
                                                 @endif
                                                 @if ($inscricao->avaliacao)
@@ -287,7 +298,7 @@
                                                 @endif
                                         </div>
                                     </div>
-                                    @if(auth()->user()->role == "presidenteBancaExaminadora")
+                                    @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first() != null && $inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
                                         @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
                                                 date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
                                             <div class="form-row justify-content-center">

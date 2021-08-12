@@ -140,7 +140,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function concursosChefeBanca()
     {
-        return $this->belongsToMany(Concurso::class, 'chefe_da_banca', 'users_id', 'concursos_id');
+        return $this->belongsToMany(Concurso::class, 'chefe_da_banca', 'users_id', 'concursos_id')->withPivot('chefe');
     }
 
     public function candidato()

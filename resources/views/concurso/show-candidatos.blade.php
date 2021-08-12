@@ -12,14 +12,33 @@
                         <div class="form-group">
                             <div class="style_card_container_header_campo_obrigatorio">
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-filtros">Filtrar</button>
+                                @if($inscricoes->count() > 0)
+                                    <a class="btn btn-primary" href="{{route('baixar.documentos.todos.candidatos',['concurso_id' => $concurso->id])}}">
+                                        <div class="btn-group">
+                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                            <h6 style="margin-left: 5px; margin-top:1px; margin-bottom: 1px; color:#fff">Baixar documentos dos candidatos</h6>
+                                        </div>
+                                    </a>
+                                @endif
                                 @if($request->filtro != null)
                                     <a type="button" class="btn btn-secondary" href="{{route('show.candidatos.concurso', $concurso->id)}}">Limpar filtros</a>
                                 @endif
                                 @if(auth()->user()->role != "presidenteBancaExaminadora")
                                     <a type="button" class="btn btn-success" href="{{route('inscricao.chefe.concurso', ['concurso' => $concurso->id])}}">Inscrever candidato</a>
                                 @endif
-                            </div>      
-                        </div>     
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @error('error')
+                            <div class="row">
+                                <div class="col-md-12" style="margin-top: 5px;">
+                                    <div class="alert alert-danger" role="alert">
+                                        <p>{{ $message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @enderror
                     </div>
                     @if($inscricoes->count() > 0)
                         <div class="card-body">
@@ -74,11 +93,11 @@
                                                         <img src="{{asset('img/icons-document-blue.png')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato enviou os documentos">
                                                     @endif
                                                 @elseif($inscricao->status == "reprovado")
-                                                    <img src="{{asset('img/icon_reprovado_vermelho.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato reprovado"> 
+                                                    <img src="{{asset('img/icon_reprovado_vermelho.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato reprovado">
                                                 @elseif($inscricao->status == "Aguardando pagamento")
-                                                    <img src="{{asset('img/icon_pagamento_pendente_colorido.svg')}}" alt="..." width="55px" data-toggle="tooltip" data-placement="top" title="Aguardando pagamento">  
+                                                    <img src="{{asset('img/icon_pagamento_pendente_colorido.svg')}}" alt="..." width="55px" data-toggle="tooltip" data-placement="top" title="Aguardando pagamento">
                                                 @else
-                                                    <img src="{{asset('img/icon_pendente_colorido.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Pendente"> 
+                                                    <img src="{{asset('img/icon_pendente_colorido.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Pendente">
                                                 @endif
                                             </td>
                                             <td id="tabela_container_linha" style="text-align: center;">
@@ -126,7 +145,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endif    
+                    @endif
                 </div>
             </div>
         </div>
@@ -154,7 +173,7 @@
                         <div id="input-cpf" class="col-sm-6 form-group" style="{{$request->cpf != null ? 'display: block;' : 'display: none;'}}">
                             <input type="text" class="form-control input-search cpf" name="cpf" placeholder="Digite o CPF" value="{{$request->cpf != null ? $request->cpf : ""}}">
                             <small>Obs.: digitar somente números.</small>
-                        </div>  
+                        </div>
                     </div>
                 </form>
             </div>
@@ -168,7 +187,7 @@
 
     <script>
         $(document).ready(function () {
-            $('.cpf').mask('00000000000'); 
+            $('.cpf').mask('00000000000');
         });
 
         function exibirCampo(input, id) {
@@ -180,7 +199,7 @@
         }
         function busca(nome) {
             var candidatos = document.getElementById('candidatos').children;
-            if(nome.length > 2) {      
+            if(nome.length > 2) {
                 for(var i = 0; i < candidatos.length; i++) {
                     var nomeLinha = candidatos[i].children[1].children[0].children[0].textContent;
                     console.log(nomeLinha);

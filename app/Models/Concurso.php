@@ -98,7 +98,7 @@ class Concurso extends Model
     }
 
     public function chefeDaBanca() {
-        return $this->belongsToMany(User::class, 'chefe_da_banca', 'concursos_id', 'users_id');
+        return $this->belongsToMany(User::class, 'chefe_da_banca', 'concursos_id', 'users_id')->withPivot('chefe');
     }
 
     public function notas() {
