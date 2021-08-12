@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Inscricao;
 use App\Models\User;
-use App\Models\Concurso;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -103,7 +102,8 @@ class InscricaoPolicy
      * @return mixed
      */
 
-    public function showDocumentos(User $user, Inscricao $inscricao) {
+    public function showDocumentos(User $user, Inscricao $inscricao)
+    {
         return $inscricao->users_id == $user->id || $user->role == "chefeSetorConcursos" || $user->role == "admin";
     }
 
@@ -115,11 +115,12 @@ class InscricaoPolicy
      * @return mixed
      */
 
-    public function enviarDocumentos(User $user, Inscricao $inscricao) {
+    public function enviarDocumentos(User $user, Inscricao $inscricao)
+    {
         return $inscricao->users_id == $user->id && $this->dentroDoPeriodo($inscricao) || $user->role == "chefeSetorConcursos" || $user->role == "admin";
     }
 
-     /**
+    /**
      * Determina se o usuário logado pode avaliar os documentos do candidato.
      *
      * @param  \App\Models\User  $user
@@ -127,7 +128,8 @@ class InscricaoPolicy
      * @return mixed
      */
 
-    public function avaliar(User $user, Inscricao $inscricao) {
+    public function avaliar(User $user, Inscricao $inscricao)
+    {
         $concurso = $inscricao->concurso;
         return $concurso->chefeDaBanca()->where('chefe', true)->first()->id == $user->id;
     }
@@ -147,7 +149,7 @@ class InscricaoPolicy
 
 
     // FUNÇÕES PRIVADAS
-     /**
+    /**
      * Determina se está dentro do periodo de envio de documentos.
      *
      * @param  \App\Models\User  $user
@@ -155,18 +157,19 @@ class InscricaoPolicy
      * @return mixed
      */
 
-    private function dentroDoPeriodo(Inscricao $inscricao) {
+    private function dentroDoPeriodo(Inscricao $inscricao)
+    {
         $concurso = $inscricao->concurso;
         return $concurso->data_inicio_envio_doc <= now() && now() <= $concurso->data_fim_envio_doc;
-    } 
+    }
 
     /**
-    * Regra que determina se o usuário é dono do concurso
-    *
-    * @param  \App\Models\User  $user
-    * @param  \App\Models\Inscricao  $inscricao
-    * @return mixed
-    */
+     * Regra que determina se o usuário é dono do concurso
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Inscricao  $inscricao
+     * @return mixed
+     */
     private function ehDonoDoConcurso(User $user, Inscricao $inscricao)
     {
         $concurso = $inscricao->concurso;
@@ -174,14 +177,15 @@ class InscricaoPolicy
     }
 
     /**
-    * Regra que determina se o usuário participa da banca examinadora do concurso
-    *
-    * @param  \App\Models\User  $user
-    * @param  \App\Models\Inscricao  $inscricao
-    * @return mixed
-    */
+     * Regra que determina se o usuário participa da banca examinadora do concurso
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Inscricao  $inscricao
+     * @return mixed
+     */
 
-    private function ehDaBancaExaminadora(User $user, Inscricao $inscricao){
+    private function ehDaBancaExaminadora(User $user, Inscricao $inscricao)
+    {
         $concurso = $inscricao->concurso;
         return $concurso->chefeDaBanca->contains('id', $user->id);
     }
