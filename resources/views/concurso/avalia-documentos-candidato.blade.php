@@ -2,7 +2,7 @@
 @section('content')
 <div class="container" style="margin-top: 5rem; margin-bottom: 8rem;">
     <div class="form-row justify-content-center">
-        <div class="@if($inscricao->concurso->users_id == auth()->user()->id) col-md-10 @elseif($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id) col-md-6 @endif" style="margin-bottom: 2rem;">
+        <div class="@if($inscricao->concurso->users_id == auth()->user()->id) col-md-10 @elseif($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first() != null && $inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id) col-md-6 @endif" style="margin-bottom: 2rem;">
             <div class="card shadow bg-white style_card_container">
                 <div class="card-header d-flex justify-content-between bg-white" id="style_card_container_header">
                     <h6 class="style_card_container_header_titulo">Etapa - Prova de Títulos</h6>
@@ -259,7 +259,7 @@
                                             </a>
                                         @endif
                                     </div>
-                                    @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
+                                    @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first() != null && $inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
                                         @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
                                                     date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
                                             <div class="col-md-12" style="margin-top: 10px;">
@@ -292,7 +292,7 @@
                                                     @endif
                                             </div>
                                         </div>
-                                        @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
+                                        @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first() != null && $inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
                                             @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
                                                     date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
                                                 <div class="form-row justify-content-center">
