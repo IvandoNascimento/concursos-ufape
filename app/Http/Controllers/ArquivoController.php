@@ -171,7 +171,7 @@ class ArquivoController extends Controller
 
         $filename = $nomeCandidato.'.zip';
         $zip = new ZipArchive();
-        $zip->open($filename, ZipArchive::CREATE);
+        $zip->open(storage_path('app'. DIRECTORY_SEPARATOR . $filename), ZipArchive::CREATE);
         $path = 'app'. DIRECTORY_SEPARATOR .'public' . DIRECTORY_SEPARATOR . 'concursos' . DIRECTORY_SEPARATOR . $arquivos->inscricao->concursos_id . DIRECTORY_SEPARATOR . 'inscricoes' . DIRECTORY_SEPARATOR . $id;
 
 
@@ -183,19 +183,20 @@ class ArquivoController extends Controller
             }
         }
         $zip->close();
+        //return response()->download(storage_path('app'. DIRECTORY_SEPARATOR . $filename));
         header('Content-type: application/zip');
-        header('Content-Disposition: attachment; filename="'.basename($filename).'"');
-        header("Content-length: " . filesize($filename));
+        header('Content-Disposition: attachment; filename="'.basename(storage_path('app'. DIRECTORY_SEPARATOR . $filename)).'"');
+        header("Content-length: " . filesize(storage_path('app'. DIRECTORY_SEPARATOR . $filename)));
         header("Pragma: no-cache");
         header("Expires: 0");
 
         ob_clean();
         flush();
 
-        readfile($filename);
+        readfile(storage_path('app'. DIRECTORY_SEPARATOR . $filename));
 
         ignore_user_abort(true);
-        unlink($filename);
+        unlink(storage_path('app'. DIRECTORY_SEPARATOR . $filename));
         exit();
     }
 
@@ -206,7 +207,7 @@ class ArquivoController extends Controller
         $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->get();
         $filename = 'Documentos dos Candidatos.zip';
         $zip = new ZipArchive();
-        $zip->open($filename, ZipArchive::CREATE);
+        $zip->open(storage_path('app'. DIRECTORY_SEPARATOR . $filename), ZipArchive::CREATE);
 
         $temArquivo = false;
 
@@ -234,18 +235,18 @@ class ArquivoController extends Controller
             return redirect()->back()->withErrors(['error' => 'Não há documentos submetidos ainda.']);
         }
         header('Content-type: application/zip');
-        header('Content-Disposition: attachment; filename="'.basename($filename).'"');
-        header("Content-length: " . filesize($filename));
+        header('Content-Disposition: attachment; filename="'.basename(storage_path('app'. DIRECTORY_SEPARATOR . $filename)).'"');
+        header("Content-length: " . filesize(storage_path('app'. DIRECTORY_SEPARATOR . $filename)));
         header("Pragma: no-cache");
         header("Expires: 0");
 
         ob_clean();
         flush();
 
-        readfile($filename);
+        readfile(storage_path('app'. DIRECTORY_SEPARATOR . $filename));
 
         ignore_user_abort(true);
-        unlink($filename);
+        unlink(storage_path('app'. DIRECTORY_SEPARATOR . $filename));
         exit();
     }
 
