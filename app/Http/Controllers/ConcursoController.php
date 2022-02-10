@@ -218,10 +218,10 @@ class ConcursoController extends Controller
 
         if ($request->aprovar == "true") {
             $inscricao->status = "aprovado";
-            $mensagem = "Candidato aprovado com sucesso!";
+            $mensagem = "Candidato deferido com sucesso!";
         } else if ($request->aprovar == "false") {
             $inscricao->status = "reprovado";
-            $mensagem = "Candidato reprovado com sucesso!";
+            $mensagem = "Candidato indeferido com sucesso!";
         }
 
         $inscricao->update();

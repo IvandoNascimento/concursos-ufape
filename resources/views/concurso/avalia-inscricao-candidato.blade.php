@@ -164,13 +164,13 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-12">
-                                        <h6 class="style_card_container_header_subtitulo">Issenção</h6>
+                                        <h6 class="style_card_container_header_subtitulo">Isenção</h6>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-12 form-group">
                                         <input id="isencao" type="checkbox" name="desejo_isencao" @if($inscricao->solicitou_isencao) checked @endif disabled>
-                                        <label for="isencao">Solicito issenção da taxa de pagamento.</label>
+                                        <label for="isencao">Solicito isenção da taxa de pagamento.</label>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -206,13 +206,13 @@
                                     <div class="col-md-6 form-group" style="margin-bottom: 9px;">
                                         <button class="btn btn-danger shadow-sm" style="width: 100%;"
                                             data-toggle="modal" data-target="#reprovar-candidato-{{$candidato->id}}">
-                                            Reprovado
+                                            Indeferido
                                         </button>
                                     </div>
                                     <div class="col-md-6 form-group" style="margin-bottom: 9px;">
                                         <button class="btn btn-success shadow-sm" style="width: 100%;"
                                             data-toggle="modal" data-target="#aprovar-candidato-{{$candidato->id}}">
-                                            Aprovado
+                                            Deferido
                                         </button>
                                     </div>
                                 </div>
@@ -248,15 +248,15 @@
                                                     {{-- Icones de status dos candidatos--}}
                                                     @if($item->status == "aprovado")
                                                         @if($inscricao->user->id == $item->user->id)
-                                                            <img src="{{asset('img/icon_aprovado_branco.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato aprovado">
+                                                            <img src="{{asset('img/icon_aprovado_branco.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato deferido">
                                                         @else
-                                                            <img src="{{asset('img/icon_aprovado_verde.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato aprovado">
+                                                            <img src="{{asset('img/icon_aprovado_verde.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato deferido">
                                                         @endif
                                                     @elseif($item->status == "reprovado")
                                                         @if($inscricao->user->id == $item->user->id)
-                                                            <img src="{{asset('img/icon_reprovado_branco.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato reprovado">
+                                                            <img src="{{asset('img/icon_reprovado_branco.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato indeferido">
                                                         @else
-                                                            <img src="{{asset('img/icon_reprovado_vermelho.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato reprovado">
+                                                            <img src="{{asset('img/icon_reprovado_vermelho.svg')}}" alt="..." width="20px" data-toggle="tooltip" data-placement="top" title="Candidato indeferido">
                                                         @endif
                                                     @elseif($item->status == "Aguardando pagamento")
                                                         @if($inscricao->user->id == $item->user->id)
@@ -289,7 +289,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Reprovar</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Indeferir</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -298,7 +298,7 @@
                 <form id="form-reprova-candidato-{{$candidato->id}}" method="POST" action="{{route('aprovar-reprovar-candidato.inscricao', $inscricao->id)}}">
                     <input type="hidden" name="aprovar" value="false">
                     @csrf
-                    Tem certeza que deseja reprovar o candidato {{  $inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
+                    Tem certeza que deseja indeferir o candidato {{  $inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
                 </form>
             </div>
             <div class="modal-footer">
@@ -312,7 +312,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Aprovar</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Deferir</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -321,7 +321,7 @@
                 <form id="form-aprova-candidato-{{$candidato->id}}" method="POST" action="{{ route('aprovar-reprovar-candidato.inscricao', $inscricao->id) }}">
                     <input type="hidden" name="aprovar" value="true">
                     @csrf
-                    Tem certeza que deseja Aprovar o candidato {{  $inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
+                    Tem certeza que deseja deferir o candidato {{  $inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
                 </form>
             </div>
             <div class="modal-footer">

@@ -88,7 +88,7 @@
                                             </td>
                                             <td id="tabela_container_linha" style="text-align: center">
                                                 @if($inscricao->status == "aprovado")
-                                                    <img src="{{asset('img/icon_aprovado_verde.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato aprovado">
+                                                    <img src="{{asset('img/icon_aprovado_verde.svg')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato deferido">
                                                     @if($inscricao->arquivos != null)
                                                         <img src="{{asset('img/icons-document-blue.png')}}" alt="..." width="25px" data-toggle="tooltip" data-placement="top" title="Candidato enviou os documentos">
                                                     @endif
