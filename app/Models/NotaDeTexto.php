@@ -42,7 +42,7 @@ class NotaDeTexto extends Model
         if ($request->anexo != null) {
             $path = 'concursos/' . $this->concurso->id . '/notas/' . $this->id . "/";
             $nome = 'anexo.' . $request->file('anexo')->getClientOriginalExtension();
-            Storage::putFileAs('public/' . $path, $request->anexo, $nome);
+            Storage::putFileAs($path, $request->anexo, $nome);
             $this->anexo = $path . $nome;
         }
 
@@ -50,8 +50,8 @@ class NotaDeTexto extends Model
     }
 
     public function deletar() {
-        if ($this->anexo != null && Storage::disk()->exists('public/'.$this->anexo)) {
-            Storage::delete('public/'.$this->anexo);
+        if ($this->anexo != null && Storage::disk()->exists($this->anexo)) {
+            Storage::delete($this->anexo);
         }
 
         $this->delete();

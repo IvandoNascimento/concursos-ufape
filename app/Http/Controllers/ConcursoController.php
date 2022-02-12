@@ -212,7 +212,7 @@ class ConcursoController extends Controller
     {
         $inscricao = Inscricao::find($request->inscricao_id);
         $this->authorize('update', $inscricao);
-        
+
         $concurso = $inscricao->concurso;
         $mensagem = "";
 
@@ -255,11 +255,11 @@ class ConcursoController extends Controller
         }
 
         if ($avaliacao && $request->ficha_avaliacao) {
-            Storage::delete('public/' . $avaliacao->ficha_avaliacao);
+            Storage::delete($avaliacao->ficha_avaliacao);
 
             $path_ficha_avaliacao = 'concursos/' . $inscricao->concurso->id . '/inscricoes/' . $inscricao->id . '/avaliacao/';
             $nome_ficha_avaliacao = 'ficha_avaliacao.pdf';
-            Storage::putFileAs('public/' . $path_ficha_avaliacao, $request->ficha_avaliacao, $nome_ficha_avaliacao);
+            Storage::putFileAs($path_ficha_avaliacao, $request->ficha_avaliacao, $nome_ficha_avaliacao);
         }
 
         if ($avaliacao && $request->nota) {
@@ -270,7 +270,7 @@ class ConcursoController extends Controller
         if (!$avaliacao) {
             $path_ficha_avaliacao = 'concursos/' . $inscricao->concurso->id . '/inscricoes/' . $inscricao->id . '/avaliacao/';
             $nome_ficha_avaliacao = 'ficha_avaliacao.pdf';
-            Storage::putFileAs('public/' . $path_ficha_avaliacao, $request->ficha_avaliacao, $nome_ficha_avaliacao);
+            Storage::putFileAs($path_ficha_avaliacao, $request->ficha_avaliacao, $nome_ficha_avaliacao);
 
             Avaliacao::create([
                 'nota'            => $request->nota,
@@ -326,7 +326,7 @@ class ConcursoController extends Controller
         return $inscricoes;
     }
 
-    public function indexInscraoChefeConcurso(Request $request, $id) 
+    public function indexInscraoChefeConcurso(Request $request, $id)
     {
         $concurso = Concurso::find($id);
         $this->authorize('createInscricaoChefeConcurso', $concurso);
@@ -343,11 +343,11 @@ class ConcursoController extends Controller
                 $usuarios->push($usuario_candidato);
             }
         }
-        
+
         return view('concurso.index_inscrever_candidato', compact('concurso', 'usuarios', 'request'));
     }
 
-    private function filtrarCandidatos(Request $request) 
+    private function filtrarCandidatos(Request $request)
     {
         $query = User::query()->join('candidatos', 'candidatos.users_id', '=', 'users.id');
 
