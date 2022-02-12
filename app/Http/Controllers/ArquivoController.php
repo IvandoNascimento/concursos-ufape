@@ -81,36 +81,36 @@ class ArquivoController extends Controller
             }
         } else {
             if ($request->dados_pessoais) {
-                Storage::delete('public/' . $arquivos->dados_pessoais);
+                Storage::delete($arquivos->dados_pessoais);
                 $arquivos->dados_pessoais = $this->saveDocument($concurso->id, $request->inscricao, $request->dados_pessoais, 'dados_pessoais.pdf');
             }
 
             if ($request->curriculum_vitae_lattes) {
-                Storage::delete('public/' . $arquivos->curriculum_vitae_lattes);
+                Storage::delete($arquivos->curriculum_vitae_lattes);
                 $arquivos->curriculum_vitae_lattes = $this->saveDocument($concurso->id, $request->inscricao, $request->curriculum_vitae_lattes, 'curriculum_vitae_lattes.pdf');
             }
 
             if ($request->formacao_academica) {
-                Storage::delete('public/' . $arquivos->formacao_academica);
+                Storage::delete($arquivos->formacao_academica);
                 $arquivos->formacao_academica = $this->saveDocument($concurso->id, $request->inscricao, $request->formacao_academica, 'formacao_academica.pdf');
             }
 
             if ($request->experiencia_didatica && $arquivos->experiencia_didatica) {
-                Storage::delete('public/' . $arquivos->experiencia_didatica);
+                Storage::delete($arquivos->experiencia_didatica);
                 $arquivos->experiencia_didatica = $this->saveDocument($concurso->id, $request->inscricao, $request->experiencia_didatica, 'experiencia_didatica.pdf');
             } else if ($request->experiencia_didatica) {
                 $arquivos->experiencia_didatica = $this->saveDocument($concurso->id, $request->inscricao, $request->experiencia_didatica, 'experiencia_didatica.pdf');
             }
 
             if ($request->producao_cientifica && $arquivos->producao_cientifica) {
-                Storage::delete('public/' . $arquivos->producao_cientifica);
+                Storage::delete($arquivos->producao_cientifica);
                 $arquivos->producao_cientifica = $this->saveDocument($concurso->id, $request->inscricao, $request->producao_cientifica, 'producao_cientifica.pdf');
             } else if ($request->producao_cientifica) {
                 $arquivos->producao_cientifica = $this->saveDocument($concurso->id, $request->inscricao, $request->producao_cientifica, 'producao_cientifica.pdf');
             }
 
             if ($request->experiencia_profissional && $arquivos->experiencia_profissional) {
-                Storage::delete('public/' . $arquivos->experiencia_profissional);
+                Storage::delete($arquivos->experiencia_profissional);
                 $arquivos->experiencia_profissional = $this->saveDocument($concurso->id, $request->inscricao, $request->experiencia_profissional, 'experiencia_profissional.pdf');
             } else if ($request->experiencia_profissional) {
                 $arquivos->experiencia_profissional = $this->saveDocument($concurso->id, $request->inscricao, $request->experiencia_profissional, 'experiencia_profissional.pdf');
@@ -138,22 +138,22 @@ class ArquivoController extends Controller
 
         switch ($cod) {
             case "Dados-pessoais":
-                return Storage::disk()->exists('public/' . $arquivos->dados_pessoais) ? response()->file('storage/' . $arquivos->dados_pessoais) : abort(404);
+                return Storage::disk()->exists($arquivos->dados_pessoais) ? response()->file(storage_path('app/'.$arquivos->dados_pessoais)) : abort(404);
                 break;
             case "Lattes":
-                return Storage::disk()->exists('public/' . $arquivos->curriculum_vitae_lattes) ? response()->file('storage/' . $arquivos->curriculum_vitae_lattes) : abort(404);
+                return Storage::disk()->exists($arquivos->curriculum_vitae_lattes) ? response()->file(storage_path('app/'.$arquivos->curriculum_vitae_lattes)) : abort(404);
                 break;
             case "Formacao-academica":
-                return Storage::disk()->exists('public/' . $arquivos->formacao_academica) ? response()->file('storage/' . $arquivos->formacao_academica) : abort(404);
+                return Storage::disk()->exists($arquivos->formacao_academica) ? response()->file(storage_path('app/'.$arquivos->formacao_academica)) : abort(404);
                 break;
             case "Experiencia-didatica":
-                return Storage::disk()->exists('public/' . $arquivos->experiencia_didatica) && $arquivos->experiencia_didatica != null ? response()->file('storage/' . $arquivos->experiencia_didatica) : abort(404);
+                return Storage::disk()->exists($arquivos->experiencia_didatica) && $arquivos->experiencia_didatica != null ? response()->file(storage_path('app/'.$arquivos->experiencia_didatica)) : abort(404);
                 break;
             case "Producao-cientifica":
-                return Storage::disk()->exists('public/' . $arquivos->producao_cientifica) && $arquivos->producao_cientifica != null ? response()->file('storage/' . $arquivos->producao_cientifica) : abort(404);
+                return Storage::disk()->exists($arquivos->producao_cientifica) && $arquivos->producao_cientifica != null ? response()->file(storage_path('app/'.$arquivos->producao_cientifica)) : abort(404);
                 break;
             case "Experiencia-profissional":
-                return Storage::disk()->exists('public/' . $arquivos->experiencia_profissional) && $arquivos->experiencia_profissional != null ? response()->file('storage/' . $arquivos->experiencia_profissional) : abort(404);
+                return Storage::disk()->exists($arquivos->experiencia_profissional) && $arquivos->experiencia_profissional != null ? response()->file(storage_path('app/'.$arquivos->experiencia_profissional)) : abort(404);
                 break;
             default:
                 return abort(404);
@@ -172,7 +172,7 @@ class ArquivoController extends Controller
         $filename = $nomeCandidato.'.zip';
         $zip = new ZipArchive();
         $zip->open(storage_path('app'. DIRECTORY_SEPARATOR . $filename), ZipArchive::CREATE);
-        $path = 'app'. DIRECTORY_SEPARATOR .'public' . DIRECTORY_SEPARATOR . 'concursos' . DIRECTORY_SEPARATOR . $arquivos->inscricao->concursos_id . DIRECTORY_SEPARATOR . 'inscricoes' . DIRECTORY_SEPARATOR . $id;
+        $path = 'app'. DIRECTORY_SEPARATOR . 'concursos' . DIRECTORY_SEPARATOR . $arquivos->inscricao->concursos_id . DIRECTORY_SEPARATOR . 'inscricoes' . DIRECTORY_SEPARATOR . $id;
 
 
         $files = File::files(storage_path($path));
@@ -217,7 +217,7 @@ class ArquivoController extends Controller
             if(isset($arquivos)){
                 $temArquivo = true;
                 $nomeCandidato = $arquivos->inscricao->user->nome . ' ' . $arquivos->inscricao->user->sobrenome . ' - ' . $arquivos->inscricoes_id;
-                $path = 'app'. DIRECTORY_SEPARATOR .'public' . DIRECTORY_SEPARATOR . 'concursos' . DIRECTORY_SEPARATOR . $arquivos->inscricao->concursos_id . DIRECTORY_SEPARATOR . 'inscricoes' . DIRECTORY_SEPARATOR . $inscricao->id;
+                $path = 'app'. DIRECTORY_SEPARATOR . 'concursos' . DIRECTORY_SEPARATOR . $arquivos->inscricao->concursos_id . DIRECTORY_SEPARATOR . 'inscricoes' . DIRECTORY_SEPARATOR . $inscricao->id;
 
                 $zip->addEmptyDir($nomeCandidato);
                 $files = File::files(storage_path($path));
@@ -253,7 +253,7 @@ class ArquivoController extends Controller
     public function showFichaAvaliacao($avaliacao)
     {
         $avaliacao = Avaliacao::find($avaliacao);
-        return response()->file('storage/' . $avaliacao->ficha_avaliacao);
+        return response()->file(storage_path('app/'.$avaliacao->ficha_avaliacao));
     }
 
     public function downloadFichaAvaliacao($name)
@@ -266,7 +266,7 @@ class ArquivoController extends Controller
     private function saveDocument($IDConcurso, $IDinscricao, $arquivo, $nome)
     {
         $path = 'concursos/' . $IDConcurso . '/inscricoes/' . $IDinscricao . '/';
-        Storage::putFileAs('public/' . $path, $arquivo, $nome);
+        Storage::putFileAs($path, $arquivo, $nome);
         return $path . $nome;
     }
 }

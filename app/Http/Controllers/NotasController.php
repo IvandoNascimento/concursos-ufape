@@ -20,7 +20,7 @@ class NotasController extends Controller
         $concurso = Concurso::find($id);
         $this->authorize('operacoesNotasDeTexto', $concurso);
         $notas = $concurso->notas()->orderBy('created_at')->get();
-        
+
         return view('notas.index', compact('concurso', 'notas'));
     }
 
@@ -53,7 +53,7 @@ class NotasController extends Controller
         $nota->setAtributes($request, $concurso);
         $nota->save();
         $nota->salvarAnexo($request);
-        
+
         return redirect(route('notas.index', ['concurso' => $id]))->with(['mensage' => "Nota de texto criada com sucesso!"]);
     }
 
@@ -80,7 +80,7 @@ class NotasController extends Controller
         $this->authorize('update', $nota);
         $concurso = Concurso::find($concurso_id);
         $this->authorize('operacoesNotasDeTexto', $concurso);
-       
+
         return view('notas.edit', compact('nota', 'concurso'));
     }
 
@@ -122,12 +122,12 @@ class NotasController extends Controller
         return redirect(route('notas.index', ['concurso' => $concurso->id]))->with(['mensage' => "Nota de texto deletada com sucesso!"]);
     }
 
-    public function anexo($id) 
+    public function anexo($id)
     {
         $nota = NotaDeTexto::find($id);
 
-        if ($nota->anexo != null && Storage::disk()->exists('public/'.$nota->anexo)) {
-            return response()->file("storage/".$nota->anexo);
+        if ($nota->anexo != null && Storage::disk()->exists($nota->anexo)) {
+            return response()->file(storage_path('app/'.$nota->anexo));
         }
 
         return abort(404);
@@ -135,14 +135,14 @@ class NotasController extends Controller
 
     public function get(Request $request) {
         $concurso = Concurso::find($request->concurso_id);
-    
+
         if ($concurso != null) {
             $notas = $concurso->notas;
 
             if ($notas->count() > 0) {
                 return response()->json($notas);
             }
-            
+
             return abort(404);
         }
 
