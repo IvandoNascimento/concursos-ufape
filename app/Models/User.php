@@ -39,7 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'data_de_nascimento'         => 'required|date',
         'país_de_origem'             => 'required',
         'estrangeiro'                => 'required',
-        'documento_de_identificação' => 'required|string|min:8|max:50',
+        'documento_de_identificação' => 'required|string|min:7|max:50',
         'órgao_emissor'              => 'required_if:estrangeiro,não',
         'cpf'                        => 'required_if:estrangeiro,não|cpf|min:11|max:12|unique:candidatos',
         'telefone'                   => 'nullable|min:10|max:20',
