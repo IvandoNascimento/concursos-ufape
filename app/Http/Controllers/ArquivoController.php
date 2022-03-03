@@ -7,6 +7,7 @@ use App\Models\Arquivo;
 use App\Models\Avaliacao;
 use App\Models\Concurso;
 use App\Models\Inscricao;
+use App\Models\User;
 use App\Notifications\EnvioDocumentosNotification;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
@@ -205,6 +206,10 @@ class ArquivoController extends Controller
         $concurso = Concurso::find($request->concurso_id);
         $this->authorize('viewCandidatos', $concurso);
         $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->get();
+        if(auth()->user()->role == User::ROLE_ENUM['presidenteBancaExaminadora']){
+            $membroBanca = auth()->user()->membroBancaExaminadora->whereIn('vaga_id', $concurso->vagas->pluck('id')->toArray());
+            $inscricoes = $inscricoes->whereIn('vagas_id', $membroBanca->pluck('vaga_id')->toArray());
+        }
         $filename = 'Documentos dos Candidatos.zip';
         $zip = new ZipArchive();
         $zip->open(storage_path('app'. DIRECTORY_SEPARATOR . $filename), ZipArchive::CREATE);
