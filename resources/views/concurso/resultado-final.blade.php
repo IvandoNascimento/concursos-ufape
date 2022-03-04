@@ -7,7 +7,8 @@
                     <div class="card-header d-flex justify-content-between bg-white" id="style_card_container_header">
                         <h6 class="style_card_container_header_titulo">Resultado Parcial</h6>
                     </div>
-                    @if($avaliacoes->count() > 0)
+                    @if($avaliacoesConcurso->first() != null && $avaliacoesConcurso->first()->count() > 0)
+                        @foreach ($avaliacoesConcurso as $avaliacoes)
                         <div class="card-body">
                             <table class="table table-bordered table-hover tabela_container">
                                 <thead>
@@ -47,6 +48,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        @endforeach
                     @else
                         <div class="card-body">
                             <div class="form-row" style="text-align: center;">

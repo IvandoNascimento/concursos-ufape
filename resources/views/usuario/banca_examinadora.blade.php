@@ -14,6 +14,7 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                             <a id="criar-user" class="dropdown-item" data-toggle="modal" data-target="#create-user-banca" >Criar membro de banca examinadora</a>
                             <a id="selecionar-user" class="dropdown-item" href="#" data-toggle="modal" data-target="#presidente-banca" >Selecionar presidente da banca</a>
+                            <a id="aitrbuir-membro" class="dropdown-item" href="#" data-toggle="modal" data-target="#membro-banca" >Selecionar a banca do membro</a>
                         </div>
                     </div>
                 </div>
@@ -57,7 +58,7 @@
                                         {{ $user->email }}
                                     </td>
                                     <td id="tabela_container_linha" style="text-align: center">
-                                        @if ($user->concursosChefeBanca('concurso_id', $concurso->id)->first()->pivot->chefe)
+                                        @if ($user->concursosChefeBanca()->get()->where('id', $concurso->id)->first()->pivot->chefe)
                                             <img src="{{asset('img/star.png')}}" width="25px" alt="Presidente da banca">
                                         @endif
                                     </td>
@@ -280,6 +281,55 @@
     </div>
     </div>
 </div>
+<div class="modal fade" id="membro-banca" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Defina a(s) vaga(s) para o membro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                @error('errorBanca')
+                    <div class="row">
+                        <div class="col-md-12" style="margin-top: 5px;">
+                            <div class="alert alert-danger" role="alert">
+                                <p>{{ $message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @enderror
+                <form id="membro-banca-form" method="POST" action="{{route('concurso.adicionar.membro.banca')}}">
+                    @csrf
+                    <div class="col-md-12 form-group">
+                        <input type="hidden" name="concurso" value="{{$concurso->id}}">
+                        <input type="hidden" name="membro_error" value="0">
+                        <label for="membro">Membro</label>
+                        <select name="membro"  class="form-control" id="membro" onChange="vagasBanca({{$concurso->id}})" required>
+                            <option value="" selected disabled>-- Selecione o membro --</option>
+                            @foreach ($membrosDoConcurso as $user)
+                                <option value="{{$user->id}}">{{$user->nome . " " . $user->sobrenome}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-12" id="vagas">
+                    </div>
+                    <div class="col-md-12">
+                        @error('vagas_banca')
+                            <div id="validationServer03Feedback" class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12 form-group" style="margin-bottom: 9px;">
+                <button class="btn btn-success shadow-sm" style="width: 100%;" id="submeterFormBotao" form="membro-banca-form">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @if(old('user_new') != null)
 <script>
     $(document).ready(function($) {
@@ -287,4 +337,50 @@
     });
 </script>
 @endif
+
+@if(old('membro_error') != null)
+<script>
+    $(document).ready(function($) {
+        $('#membro-banca').modal('show');
+    });
+</script>
+@endif
+
+<script>
+    function vagasBanca(concurso) {
+        var historySelectList = $('select#membro');
+        var user = $('option:selected', historySelectList).val();
+
+        var vagas = document.getElementById('vagas');
+        vagas.innerHTML = "";
+
+        $.ajax({
+            url:"{{route('concurso.info.vagas.user')}}",
+            type:"get",
+            data: {"user": user, "concurso": concurso},
+            dataType:'json',
+            success: function(data) {
+                for(var i = 0; i < data.vagas.length; i++){
+                    if(data.membro[i] == null){
+                        var html1 = `<div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vagas_banca[]" value="`+data.vagas[i].id+`" id="vaga_banca`+data.vagas[i].id+`">
+                                    <label class="form-check-label" for="vaga_banca`+data.vagas[i].id+`">
+                                        `+data.vagas[i].nome+`
+                                    </label>
+                                </div>`;
+                        $('#vagas').append(html1);
+                    }else{
+                        var html1 = `<div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vagas_banca[]" value="`+data.vagas[i].id+`" id="vaga_banca`+data.vagas[i].id+`" checked>
+                                    <label class="form-check-label" for="vaga_banca`+data.vagas[i].id+`">
+                                        `+data.vagas[i].nome+`
+                                    </label>
+                                </div>`;
+                        $('#vagas').append(html1);
+                    }
+                }
+            }
+        });
+    }
+</script>
 @endsection

@@ -10,6 +10,7 @@ use App\Models\Inscricao;
 use App\Models\OpcoesVagas;
 use App\Models\NotaDeTexto;
 use App\Models\Candidato;
+use App\Models\MembroBanca;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -194,6 +195,11 @@ class ConcursoController extends Controller
             $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->orderBy('created_at', 'ASC')->get();
         }
 
+        if(auth()->user()->role == User::ROLE_ENUM['presidenteBancaExaminadora']){
+            $membroBanca = auth()->user()->membroBancaExaminadora->whereIn('vaga_id', $concurso->vagas->pluck('id')->toArray());
+            $inscricoes = $inscricoes->whereIn('vagas_id', $membroBanca->pluck('vaga_id')->toArray());
+        }
+
         return view('concurso.show-candidatos', compact('inscricoes', 'concurso', 'request'));
     }
 
@@ -232,6 +238,12 @@ class ConcursoController extends Controller
     public function avaliarDocumentosCandidato(Request $request)
     {
         $inscricao = Inscricao::find($request->inscricao_id);
+        if(auth()->user()->role == User::ROLE_ENUM['presidenteBancaExaminadora']){
+            $membroBanca = auth()->user()->membroBancaExaminadora->whereIn('vaga_id', $inscricao->concurso->vagas->pluck('id')->toArray());
+            if(!in_array($inscricao->vagas_id, $membroBanca->pluck('vaga_id')->toArray())){
+                return redirect()->back();
+            }
+        }
         $this->authorize('viewDocumentos', $inscricao);
 
         $arquivos = Arquivo::where('inscricoes_id', $request->inscricao_id)->first();
@@ -286,9 +298,19 @@ class ConcursoController extends Controller
     {
         $concurso = Concurso::find($request->concurso_id);
         $this->authorize('viewCandidatos', $concurso);
-        $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->get();
-        $avaliacoes = Avaliacao::whereIn('inscricoes_id', $inscricoes->pluck('id'))->orderBy('nota', 'desc')->get();
-        return view('concurso.resultado-final', compact('avaliacoes'));
+        $avaliacoesConcurso = collect();
+        foreach($concurso->vagas as $vaga){
+            $inscricoes = Inscricao::where([['concursos_id', $concurso->id], ['vagas_id', $vaga->id]])->get();
+            if(auth()->user()->role == User::ROLE_ENUM['presidenteBancaExaminadora']){
+                $membroBanca = auth()->user()->membroBancaExaminadora->whereIn('vaga_id', $concurso->vagas->pluck('id')->toArray());
+                $inscricoes = $inscricoes->whereIn('vagas_id', $membroBanca->pluck('vaga_id')->toArray());
+            }
+            $avaliacaoesVaga = Avaliacao::whereIn('inscricoes_id', $inscricoes->pluck('id'))->orderBy('nota', 'desc')->get();
+            if($avaliacaoesVaga->count() > 0){
+                $avaliacoesConcurso->push($avaliacaoesVaga);
+            }
+        }
+        return view('concurso.resultado-final', compact('avaliacoesConcurso'));
     }
 
     public function AdicionarUserBanca($user_id, $concurso_id)
@@ -306,9 +328,70 @@ class ConcursoController extends Controller
         $this->authorize('operacoesUserBanca', $concurso);
         $concurso->chefeDaBanca()->detach($user_id);
 
+        $user = User::find($user_id);
+
+        foreach($user->membroBancaExaminadora as $membro){
+            $membro->delete();
+        }
+
         return redirect()->back()->with(['success' => "Usuário removido da banca do concurso."]);
     }
 
+    public function adicionarMembroBanca(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'membro' => 'required',
+            'vagas_banca' => 'required',
+        ]);
+
+        if($request->vagas_banca == null){
+            return redirect()->back()->withErrors(['errorBanca' => "Selecione ao menos uma das opções."])->withInput();
+
+        }
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator->errors())->withInput();
+        }
+
+        $user = User::find($request->membro);
+
+        foreach($request->vagas_banca as $vagas_id){
+            $vaga = OpcoesVagas::find($vagas_id);
+            if(is_null($user->membroBancaExaminadora()->where('vaga_id', $vaga->id)->first())){
+                MembroBanca::create([
+                    'vaga_id' => $vaga->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
+        foreach($user->membroBancaExaminadora as $atribuicao){
+            if(!in_array($atribuicao->vaga_id, $request->vagas_banca)){
+                $atribuicao->delete();
+            }
+        }
+
+        return redirect()->back()->with(['success' => 'Membro adicionado a(s) banca(s) com sucesso.']);
+    }
+
+    public function listarVagasBancas(Request $request)
+    {
+        $user = User::find($request->user);
+        $concurso = Concurso::find($request->concurso);
+        $ehMembro = collect();
+        foreach($concurso->vagas as $vaga){
+            if(!is_null($user->membroBancaExaminadora()->where('vaga_id', $vaga->id)->first())){
+                $ehMembro->push($vaga);
+            }else{
+                $ehMembro->push(null);
+            }
+        }
+
+        $info = array(
+            'vagas' => $concurso->vagas,
+            'membro' => $ehMembro,
+        );
+        return response()->json($info);
+    }
     private function filtrarInscricoes(Request $request)
     {
         $inscricoes = Inscricao::where('concursos_id', $request->concurso_id)->orderBy('created_at', 'ASC')->get();

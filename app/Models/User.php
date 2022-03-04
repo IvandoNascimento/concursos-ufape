@@ -143,6 +143,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Concurso::class, 'chefe_da_banca', 'users_id', 'concursos_id')->withPivot('chefe');
     }
 
+    public function membroBancaExaminadora()
+    {
+        return $this->hasMany(MembroBanca::class, 'user_id');
+    }
+
     public function candidato()
     {
         return $this->hasOne(Candidato::class, 'users_id');
