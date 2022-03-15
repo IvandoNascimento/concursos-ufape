@@ -12,10 +12,16 @@ class MembroBanca extends Model
     protected $fillable = [
         'vaga_id',
         'user_id',
+        'concurso_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function vaga()
+    {
+        return $this->belongsTo(OpcoesVagas::class, 'vaga_id');
     }
 }

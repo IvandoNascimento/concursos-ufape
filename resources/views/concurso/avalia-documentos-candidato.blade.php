@@ -288,7 +288,7 @@
                                                 @if ($inscricao->avaliacao && !$inscricao->avaliacao->nota)
                                                     required
                                                 @endif
-                                                @if($inscricao->concurso->users_id == auth()->user()->id || $inscricao->concurso->chefeDaBanca()->where([['users_id', auth()->user()->id], ['chefe', false]])->get()->count() > 0)
+                                                @if($inscricao->concurso->users_id == auth()->user()->id || $ehChefe == null)
                                                     disabled
                                                 @endif
                                                 @if ($inscricao->avaliacao)
@@ -298,7 +298,7 @@
                                                 @endif
                                         </div>
                                     </div>
-                                    @if($inscricao->concurso->chefeDaBanca()->where('chefe', true)->first() != null && $inscricao->concurso->chefeDaBanca()->where('chefe', true)->first()->id == auth()->user()->id)
+                                    @if($ehChefe != null)
                                         @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
                                                 date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
                                             <div class="form-row justify-content-center">
