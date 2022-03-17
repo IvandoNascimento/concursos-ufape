@@ -97,7 +97,7 @@ Route::middleware(['auth:sanctum', 'verified', 'CheckUserIsNotCandadidato'])->gr
 });
 
 Route::get('/adicionar-usuario/banca/{user}/{concurso}', [ConcursoController::class, 'AdicionarUserBanca'])->name('concurso.adicionar.banca')->middleware('auth');
-Route::get('/remover-usuario/banca/{user}/{concurso}', [ConcursoController::class, 'RemoverUserBanca'])->name('concurso.remover.banca')->middleware('auth');
+Route::get('/remover-usuario/banca/{user}/{concurso}/{vaga}', [ConcursoController::class, 'RemoverUserBanca'])->name('concurso.remover.banca')->middleware('auth');
 Route::resource('concurso', ConcursoController::class);
 Route::post('/adicionar-membro-a-banca', [ConcursoController::class, 'adicionarMembroBanca'])->name('concurso.adicionar.membro.banca')->middleware('auth');
 Route::get('/listar-vagas-bancas', [ConcursoController::class, 'listarVagasBancas'])->name('concurso.info.vagas.user')->middleware('auth');

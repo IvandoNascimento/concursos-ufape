@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Concurso;
+use App\Models\MembroBanca;
 use App\Models\User;
 use App\Notifications\UsuarioCadastradoNotification;
 use Illuminate\Http\Request;
@@ -126,15 +127,30 @@ class AdminController extends Controller
         
         $usuariosMembros = collect();
         $membrosDoConcurso = $concurso->chefeDaBanca()->orderBy('nome')->get();
+        $membrosBancas = MembroBanca::where('concurso_id', $concurso->id)->get();
+        $membrosBancas = $membrosBancas->groupBy('vaga_id');
+
+        $membrosBancas = $membrosBancas->sortBy(function($membros){
+            return $membros->first()->vaga->nome;
+        });
+
+        foreach($membrosBancas as $i => $membros){
+            $membros = $membros->sortBy(function($membro){
+                return $membro->user->nome;
+            });
+            $membrosBancas[$i] = $membros;
+        }
+        
         $users = User::where('role', User::ROLE_ENUM["presidenteBancaExaminadora"])->orderBy('nome')->get();
+        $membros = MembroBanca::where('concurso_id', $concurso->id)->get();
 
         foreach ($users as $user) {
-            if (!$membrosDoConcurso->contains('id', $user->id)) {
+            if ($membros->where('user_id', $user->id)->count() < $concurso->vagas->count()) {
                 $usuariosMembros->push($user);
             }
         }
 
-        return view('usuario.banca_examinadora', compact('usuariosMembros', 'membrosDoConcurso', 'concurso'));
+        return view('usuario.banca_examinadora', compact('usuariosMembros', 'membrosDoConcurso', 'concurso', 'membrosBancas'));
     }
 
     public function createUserBanca(Request $request, $id)
@@ -171,8 +187,22 @@ class AdminController extends Controller
 
         foreach ($concurso->chefeDaBanca as $user) {
             if ($request->presidente == $user->id) {
+                $presidenteAtual = MembroBanca::where([['vaga_id', $request->vaga], ['chefe', true]])->get()->first();
+                if($presidenteAtual != null){
+                    $presidenteAtual->chefe = false;
+                    $presidenteAtual->update();
+                }
+
+                $membro = MembroBanca::where([['user_id', $user->id], ['vaga_id', $request->vaga]])->get()->first();
+                $membro->chefe = true;
+                $membro->update();
+
                 $concurso->chefeDaBanca()->updateExistingPivot($user->id, ['chefe' => true]);
-            } else {
+                
+            }
+            $presidenteAlgum = MembroBanca::where([['user_id', $user->id], ['concurso_id', $concurso->id], ['chefe', true]])->get()->first();
+
+            if($user->concursosChefeBanca()->get()->where('id', $concurso->id)->first()->pivot->chefe == true && $presidenteAlgum == null){
                 $concurso->chefeDaBanca()->updateExistingPivot($user->id, ['chefe' => false]);
             }
         }

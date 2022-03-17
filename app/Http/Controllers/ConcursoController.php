@@ -247,7 +247,8 @@ class ConcursoController extends Controller
         $this->authorize('viewDocumentos', $inscricao);
 
         $arquivos = Arquivo::where('inscricoes_id', $request->inscricao_id)->first();
-        return view('concurso.avalia-documentos-candidato')->with(['arquivos' => $arquivos, 'inscricao' => $inscricao]);
+        $ehChefe = MembroBanca::where([['user_id', auth()->user()->id], ['vaga_id', $inscricao->vaga->id], ['chefe', true]])->get()->first();
+        return view('concurso.avalia-documentos-candidato')->with(['arquivos' => $arquivos, 'inscricao' => $inscricao, 'ehChefe' => $ehChefe]);
     }
 
     public function savePontuacaoDocumentosCandidato(Request $request)
@@ -322,18 +323,21 @@ class ConcursoController extends Controller
         return redirect()->back()->with(['success' => "Usuário adicionado a banca do concurso."]);
     }
 
-    public function RemoverUserBanca($user_id, $concurso_id)
+    public function RemoverUserBanca($user_id, $concurso_id, $vaga_id)
     {
         $concurso = Concurso::find($concurso_id);
         $this->authorize('operacoesUserBanca', $concurso);
-        $concurso->chefeDaBanca()->detach($user_id);
 
         $user = User::find($user_id);
 
-        foreach($user->membroBancaExaminadora as $membro){
+        $vaga = OpcoesVagas::find($vaga_id);
+        foreach($user->membroBancaExaminadora()->where('vaga_id', $vaga->id)->get() as $membro){
             $membro->delete();
         }
 
+        if($user->membroBancaExaminadora()->where('concurso_id', $concurso->id)->get()->count() == 0 ){
+            $concurso->chefeDaBanca()->detach($user_id);
+        }
         return redirect()->back()->with(['success' => "Usuário removido da banca do concurso."]);
     }
 
@@ -354,6 +358,12 @@ class ConcursoController extends Controller
         }
 
         $user = User::find($request->membro);
+        $vaga = OpcoesVagas::find($request->vagas_banca[0]);
+
+        if($vaga->concurso->chefeDaBanca()->where('users_id', $user->id)->get()->first() == null){
+            $vaga->concurso->chefeDaBanca()->attach($user->id);
+        }
+
 
         foreach($request->vagas_banca as $vagas_id){
             $vaga = OpcoesVagas::find($vagas_id);
@@ -361,6 +371,7 @@ class ConcursoController extends Controller
                 MembroBanca::create([
                     'vaga_id' => $vaga->id,
                     'user_id' => $user->id,
+                    'concurso_id' => $vaga->concurso->id,
                 ]);
             }
         }
