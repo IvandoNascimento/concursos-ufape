@@ -111,4 +111,8 @@ class Concurso extends Model
     public function notas() {
         return $this->hasMany(NotaDeTexto::class, 'concursos_id');
     }
+
+    public function resultados() {
+        return $this->hasMany(Resultado::class, 'concurso_id');
+    }
 }

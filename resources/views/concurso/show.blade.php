@@ -304,7 +304,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                          <div class="form-row">
+                          {{--
                               <div class="col-md-12">
                                   <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
                                       <div class="form-group" style="width: 100%">
@@ -312,7 +312,7 @@
                                               <div>
                                                 {{-- @foreach ($notas_resultado as $nota)
                                                   <div class="col-md-12" id="nota-{{$nota->id}}"></div>
-                                                @endforeach --}}
+                                                @endforeach 
                                                 <h5 style=" font-size:19px; margin-top:9px">Para acesso aos resultados do concurso, acesse o portal da UFAPE, na seção Concursos / Professor do magistério superior. Endereço:
                                                   <a target="_black" href="http://ufape.edu.br/br/professor-magist%C3%A9rio-superior-concurso">http://ufape.edu.br/br/professor-magist%C3%A9rio-superior-concurso</a>
                                                 </h5>
@@ -320,7 +320,72 @@
                                           </div>
                                       </div>
                                   </div>
-                              </div>
+                              </div>--}}
+                              @forelse($concurso->resultados as $i => $resultado)
+                                @if($i < 5)
+                                  <div class="col-md-12">
+                                        <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
+                                            <div style="margin-right:10px; margin-top:-20px">
+                                                <img class="" src="{{asset('img/file-pdf-solid.svg')}}" alt="" width="20px">
+                                            </div>
+                                            <div class="form-group" style="width: 100%">
+                                                <div class="d-flex justify-content-between" style="width: 100%">
+                                                    <div><a style=" font-size:19px; margin-top:9px" href="{{route('resultados.anexo', ['resultado' => $resultado])}}" target="_new">{{$resultado->nome}}</a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  @endif
+                              @empty
+                                {{--<h6 style="color: #909090">Não há resultados publicados para o concurso</h6>--}}
+                                <div class="col-md-12">
+                                  <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
+                                      <div class="form-group" style="width: 100%">
+                                          <div class="d-flex justify-content-between" style="width: 100%">
+                                              <div>
+                                                <h5 style=" font-size:19px; margin-top:9px">Para acesso aos resultados do concurso, acesse o portal da UFAPE, na seção Concursos / Professor do magistério superior. Endereço:
+                                                  <a target="_black" href="http://ufape.edu.br/br/professor-magist%C3%A9rio-superior-concurso">http://ufape.edu.br/br/professor-magist%C3%A9rio-superior-concurso</a>
+                                                </h5>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
+                              @endforelse
+
+                              @if($concurso->resultados->count() > 5)
+                                <div class="accordion" id="accordionExample">
+                                  
+                                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                      @foreach ($concurso->resultados as $i => $resultado)
+                                        @if($i >= 5)
+                                          <div class="col-md-12">
+                                              <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
+                                                  <div style="margin-right:10px; margin-top:-20px">
+                                                      <img class="" src="{{asset('img/file-pdf-solid.svg')}}" alt="" width="20px">
+                                                  </div>
+                                                  <div class="form-group" style="width: 100%">
+                                                      <div class="d-flex justify-content-between" style="width: 100%">
+                                                          <div><a style=" font-size:19px; margin-top:9px" href="{{route('resultados.anexo', ['resultado' => $resultado])}}" target="_new">{{$resultado->nome}}</a></div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                        @endif
+                                      @endforeach
+                                    </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-6" style="text-align: right">
+                                  </div>
+                                  <div class="col-md-6">
+                                    <a id="resultadosBox" onclick="alterarMenos()" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                                      Mostrar mais
+                                    </a>
+                                    <input type="hidden" id="resultadoFlag" value="0">
+                                  </div>
+                                </div>
+                              @endif
                           </div>
                       </div>
                   </div>
@@ -340,6 +405,18 @@
     }
     function shareTwitter(url) {
       window.open("https://twitter.com/intent/tweet?url="+url, "Compartilhar com o facebook", "height=1000,width=1000");
+    }
+
+    function alterarMenos() {
+      resultadoFlag = document.getElementById('resultadoFlag').value;
+      box = document.getElementById('resultadosBox');
+      if(resultadoFlag == 0){
+        box.innerHTML = "Mostrar menos";
+        document.getElementById('resultadoFlag').value = 1;
+      }else{
+        box.innerHTML = "Mostrar mais";
+        document.getElementById('resultadoFlag').value = 0;
+      }
     }
 
     $(document).ready(function() {

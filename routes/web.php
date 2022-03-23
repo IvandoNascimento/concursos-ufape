@@ -9,6 +9,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ArquivoController;
 use App\Http\Controllers\NotasController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ResultadoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,7 +121,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/notas/{nota}/editar/{concurso}', [NotasController::class, 'edit'])->name('notas.edit');
     Route::put('/notas/{nota}/atualizar', [NotasController::class, 'update'])->name('notas.update');
     Route::delete('/notas/{nota}/deletar', [NotasController::class, 'destroy'])->name('notas.destroy');
+
+    Route::get('/resultados/{concurso}', [ResultadoController::class, 'index'])->name('resultados.index');
+    Route::get('/resultados/{concurso}/criar', [ResultadoController::class, 'create'])->name('resultados.create');
+    Route::post('/resultados/{concurso}/salvar', [ResultadoController::class, 'store'])->name('resultados.store');
+    Route::get('/resultados/{resultado}/editar/{concurso}', [ResultadoController::class, 'edit'])->name('resultados.edit');
+    Route::put('/resultados/{resultado}/atualizar', [ResultadoController::class, 'update'])->name('resultados.update');
+    Route::delete('/resultados/{resultado}/deletar', [ResultadoController::class, 'destroy'])->name('resultados.destroy');
 });
 Route::get('/notas/{nota}/anexo', [NotasController::class, 'anexo'])->name('notas.anexo');
+Route::get('/resultados/{resultado}/anexo', [ResultadoController::class, 'anexo'])->name('resultados.anexo');
+
 Route::get('/notas-do-concurso', [NotasController::class, 'get'])->name('notas.get');
 Route::get('/error/403', [Controller::class, 'unauthorized']);
