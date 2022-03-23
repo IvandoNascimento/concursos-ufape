@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreConcursoRequest;
 use App\Models\Arquivo;
 use App\Models\Avaliacao;
+use App\Models\AvaliacaoEfetivo;
 use App\Models\Concurso;
 use App\Models\Inscricao;
 use App\Models\OpcoesVagas;
@@ -237,6 +238,39 @@ class ConcursoController extends Controller
         return redirect(route('show.candidatos.concurso', $concurso->id))->with('success', $mensagem);
     }
 
+    public function aprovarReprovarCandidatoAvaliacaoPerfil(Request $request)
+    {
+        $inscricao = Inscricao::find($request->inscricao_id);
+        $this->authorize('update', $inscricao);
+        
+        $concurso = $inscricao->concurso;
+        $mensagem = "";
+
+        if($inscricao->avaliacaoEfetivo()->first() != null){
+            $avaliacao = $inscricao->avaliacaoEfetivo()->first();
+        }else{
+            $avaliacao = new AvaliacaoEfetivo();
+            $avaliacao->concurso_id = $concurso->id;
+            $avaliacao->inscricao_id = $inscricao->id;
+        }
+
+        if ($request->aprovar == "true") {
+            $avaliacao->status = AvaliacaoEfetivo::STATUS_ENUM['deferido'];
+            $mensagem = "Candidato deferido com sucesso!";
+        } else if ($request->aprovar == "false") {
+            $avaliacao->status = AvaliacaoEfetivo::STATUS_ENUM['indeferido'];
+            $mensagem = "Candidato indeferido com sucesso!";
+        }
+
+        if($inscricao->avaliacaoEfetivo()->first() != null){
+            $avaliacao->update();
+        }else{
+            $avaliacao->save();
+        }
+
+        return redirect()->back()->with('success', $mensagem);
+    }
+
     public function avaliarDocumentosCandidato(Request $request)
     {
         $inscricao = Inscricao::find($request->inscricao_id);
@@ -313,7 +347,7 @@ class ConcursoController extends Controller
                 $avaliacoesConcurso->push($avaliacaoesVaga);
             }
         }
-        return view('concurso.resultado-final', compact('avaliacoesConcurso'));
+        return view('concurso.resultado-final', compact('avaliacoesConcurso', 'concurso'));
     }
 
     public function AdicionarUserBanca($user_id, $concurso_id)

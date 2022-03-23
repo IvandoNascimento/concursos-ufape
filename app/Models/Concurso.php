@@ -115,4 +115,8 @@ class Concurso extends Model
     public function resultados() {
         return $this->hasMany(Resultado::class, 'concurso_id');
     }
+
+    public function avaliacoesEfetivo() {
+        return $this->hasMany(AvaliacaoEfetivo::class, 'concurso_id')->orderBy('status');
+    }
 }

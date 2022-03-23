@@ -2,10 +2,23 @@
 @section('content')
 <div class="container" style="margin-top: 5rem; margin-bottom: 8rem;">
     <div class="form-row justify-content-center">
-        <div class="col-md-6" style="margin-bottom: 2rem;">
+        <div @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto']) class="col-md-6" @else class="col-md-12" @endif style="margin-bottom: 2rem;">
             <div class="card shadow bg-white style_card_container">
                 <div class="card-header d-flex justify-content-between bg-white" id="style_card_container_header">
-                    <h6 class="style_card_container_header_titulo">Etapa - Prova de Títulos</h6>
+                    
+                    @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])
+                        <h6 class="style_card_container_header_titulo">Etapa - Prova de Títulos</h6>
+                    @else
+                        <h6 class="style_card_container_header_titulo">Etapa - Avaliação de Pefil
+                            @if($inscricao->avaliacaoEfetivo()->first() != null) 
+                                @if($inscricao->avaliacaoEfetivo->status == \App\Models\AvaliacaoEfetivo::STATUS_ENUM['deferido'])
+                                    (Deferido)
+                                @else
+                                    (Indeferido)
+                                @endif
+                            @endif
+                        </h6>
+                    @endif
                     <div class="form-group">
                         @if($inscricao->concurso->users_id == auth()->user()->id)
                             <a class="btn btn-primary" href="{{route('envio.documentos.inscricao', $inscricao->id)}}" style="margin-top: 10px;">Enviar documentos</a>
@@ -31,292 +44,387 @@
                             </div>
                         </div>
                     @endif
-                    <div class="form-row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Documentos Pessoais
-                                </h6>
-                                @if (!$arquivos || !$arquivos->dados_pessoais)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
+                    @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Documentos Pessoais
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->dados_pessoais)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
                                         </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Dados-pessoais"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Curriculum vitae modelo Lattes
-                                </h6>
-                                @if (!$arquivos || !$arquivos->curriculum_vitae_lattes)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Lattes"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <h6 class="style_titulo_documento" style="color: black; margin-top: 5px;">
-                                Documentos a serem pontuados na tabela de avaliação de títulos
-                            </h6>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Grupo I - Formação Acadêmica
-                                </h6>
-                                @if (!$arquivos || !$arquivos->formacao_academica)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Formacao-academica"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-12" style="margin-top: 5px">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Grupo II - Experiência Didática
-                                </h6>
-                                @if (!$arquivos || !$arquivos->experiencia_didatica)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Experiencia-didatica"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-12" style="margin-top: 5px">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Grupo III - Produção Científica
-                                </h6>
-                                @if (!$arquivos || !$arquivos->producao_cientifica)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Producao-cientifica"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-12" style="margin-top: 5px">
-                            <div class="form-group">
-                                <h6 class="style_titulo_documento">
-                                    Grupo IV - Experiência Profissional
-                                </h6>
-                                @if (!$arquivos || !$arquivos->experiencia_profissional)
-                                    <div class="d-flex justify-content-left">
-                                        <div>
-                                            <a class="btn btn-primary">
-                                                <div class="btn-group">
-                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div style="margin-left:10px">
-                                            <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
-                                        </div>
-                                    </div>
-                                @else
-                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Experiencia-profissional"])}}" target="_new">
-                                        <div class="btn-group">
-                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
-                                        </div>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow bg-white style_card_container">
-                <div class="card-header-without-line d-flex justify-content-between bg-white" id="style_card_container_header">
-                    <h6 class="style_card_container_header_titulo">Baixar ficha de avaliação (modelo)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="col-md-12 form-group">
-                            <a href="{{route('baixar.anexo', ['name'=> 'Ficha_de_avaliacao.docx'])}}"  class="btn btn-success"
-                                target="_blank" style="color:white;">Baixar Ficha de avaliação</a>
-                        </div>
-                    </div>
-                </div>
-                <hr class="card-body" style="margin-top: -20px; margin-bottom: -5px;"/>
-                <div style="margin-top: -35px" class="card-header-without-line d-flex justify-content-between bg-white" id="style_card_container_header">
-                    <h6 style="margin-top: -5px;" class="style_card_container_header_titulo">Anexar ficha de avaliação preenchida (extensão aceita ".PDF")</h6>
-                </div>
-                <div class="card-body">
-                    @if (!$arquivos)
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong> Só é possível enviar a pontuação quando os arquivos estiverem disponíveis.</strong>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @else
-                        @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
-                                date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
-                            <form method="POST" action="{{ route('avalia.documentos.inscricao', $arquivos->inscricoes_id) }}" enctype="multipart/form-data">
-                        @else
-                            <form>
-                        @endif
-                            @csrf
-                            <div class="form-row">
-                                <div class="col-md-12">
-                                    @if($inscricao->avaliacao && $inscricao->avaliacao->ficha_avaliacao)
-                                        <a class="btn btn-primary" href="{{route('visualizar.ficha-avaliacao', $inscricao->avaliacao->id)}}" target="_new">
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Dados-pessoais"])}}" target="_new">
                                             <div class="btn-group">
                                                 <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
-                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Arquivo de pontuação</h6>
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
                                             </div>
                                         </a>
                                     @endif
                                 </div>
-                                @if(auth()->user()->role == "presidenteBancaExaminadora")
-                                    @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
-                                                date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
-                                        <div class="col-md-12" style="margin-top: 10px; margin-bottom: -15px;">
-                                            <label for="ficha_avaliacao" class="form-label style_campo_titulo">Selecione o arquivo de pontuação</label>
-                                            <input type="file" accept=".pdf" class="form-control form-control-sm @error('ficha_avaliacao') is-invalid @enderror"
-                                                id="ficha_avaliacao" style="margin-left:-10px;margin-bottom:1rem; border:0px solid #fff"
-                                                name="ficha_avaliacao" @if ($inscricao->avaliacao && !$inscricao->avaliacao->ficha_avaliacao) required @endif/>
-                                            @error('ficha_avaliacao')
-                                                <span style="color: red">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    @endif
-                                @endif
-                                <hr class="card-body" style="margin-bottom: -30px; margin-right: -15px; margin-left: -15px;"/>
-                                <div class="col-md-12">
-                                    <div class="form-row">
-                                        <div class="col-md-12 form-group">
-                                            <label for="nota" class="style_campo_titulo">Inserir pontuação da ficha de avaliação (Ex: 10 ou 10.5, etc)</label>
-                                            <input type="number" step=any id="nota" name="nota" min="0" max="100"
-                                                    class="form-control style_campo" placeholder="Digite a pontuação do candidato"
-                                                @if ($inscricao->avaliacao && !$inscricao->avaliacao->nota)
-                                                    required
-                                                @endif
-                                                @if($inscricao->concurso->users_id == auth()->user()->id || $ehChefe == null)
-                                                    disabled
-                                                @endif
-                                                @if ($inscricao->avaliacao)
-                                                    value="{{ $inscricao->avaliacao->nota }}"/>
-                                                @else
-                                                    value="{{ old('nota') }}"/>
-                                                @endif
-                                        </div>
-                                    </div>
-                                    @if($ehChefe != null)
-                                        @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
-                                                date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
-                                            <div class="form-row justify-content-center">
-                                                <div class="col-md-6 form-group" style="margin-bottom: 2.5px;">
-                                                    <button type="submit" class="btn btn-success shadow-sm" style="width: 100%;" id="submeterFormBotao">Enviar</button>
-                                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Curriculum vitae modelo Lattes
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->curriculum_vitae_lattes)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
                                             </div>
-                                        @endif
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Lattes"])}}" target="_new">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
                                     @endif
                                 </div>
                             </div>
-                        </form>
+                            <div class="form-group col-md-12">
+                                <h6 class="style_titulo_documento" style="color: black; margin-top: 5px;">
+                                    Documentos a serem pontuados na tabela de avaliação de títulos
+                                </h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Grupo I - Formação Acadêmica
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->formacao_academica)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Formacao-academica"])}}" target="_new">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" style="margin-top: 5px">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Grupo II - Experiência Didática
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->experiencia_didatica)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Experiencia-didatica"])}}" target="_new">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" style="margin-top: 5px">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Grupo III - Produção Científica
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->producao_cientifica)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Producao-cientifica"])}}" target="_new">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" style="margin-top: 5px">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Grupo IV - Experiência Profissional
+                                    </h6>
+                                    @if (!$arquivos || !$arquivos->experiencia_profissional)
+                                        <div class="d-flex justify-content-left">
+                                            <div>
+                                                <a class="btn btn-primary">
+                                                    <div class="btn-group">
+                                                        <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                        <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div style="margin-left:10px">
+                                                <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Experiencia-profissional"])}}" target="_new">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        @if (!$arquivos || !$arquivos->avaliacao_perfil)
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <h6 class="style_titulo_documento">
+                                        Perfil
+                                    </h6>
+                                <div class="d-flex justify-content-left">
+                                    <div>
+                                        <a class="btn btn-primary">
+                                            <div class="btn-group">
+                                                <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Baixar</h6>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div style="margin-left:10px">
+                                        <h6 style="color: red">Documento ainda <br>não foi enviado.</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="d-flex align-items-center my-2 pt-1 pb-3">
+                                <iframe id="documentoPerfilIframe" allowtransparency="true" src="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Avaliacao-perfil"])}}" width="100%" height="700"  frameborder="0"></iframe>
+                            </div>
+
+                            <h6 class="style_card_container_header_titulo">Aprove o documento do candidato</h6>
+                            <div class="form-row">
+                                <div class="col-md-6 form-group" style="margin-bottom: 9px;">
+                                    <button class="btn btn-danger shadow-sm" style="width: 100%;"
+                                        data-toggle="modal" data-target="#reprovar-candidato-{{$inscricao->id}}">
+                                        Indeferir
+                                    </button>
+                                </div>
+                                <div class="col-md-6 form-group" style="margin-bottom: 9px;">
+                                    <button class="btn btn-success shadow-sm" style="width: 100%;"
+                                        data-toggle="modal" data-target="#aprovar-candidato-{{$inscricao->id}}">
+                                        Deferir
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>
         </div>
+        @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])
+            <div class="col-md-6">
+                <div class="card shadow bg-white style_card_container">
+                    <div class="card-header-without-line d-flex justify-content-between bg-white" id="style_card_container_header">
+                        <h6 class="style_card_container_header_titulo">Baixar ficha de avaliação (modelo)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-12 form-group">
+                                <a href="{{route('baixar.anexo', ['name'=> 'Ficha_de_avaliacao.docx'])}}"  class="btn btn-success"
+                                    target="_blank" style="color:white;">Baixar Ficha de avaliação</a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="card-body" style="margin-top: -20px; margin-bottom: -5px;"/>
+                    <div style="margin-top: -35px" class="card-header-without-line d-flex justify-content-between bg-white" id="style_card_container_header">
+                        <h6 style="margin-top: -5px;" class="style_card_container_header_titulo">Anexar ficha de avaliação preenchida (extensão aceita ".PDF")</h6>
+                    </div>
+                    <div class="card-body">
+                        @if (!$arquivos)
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <strong> Só é possível enviar a pontuação quando os arquivos estiverem disponíveis.</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        @else
+                            @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
+                                    date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
+                                <form method="POST" action="{{ route('avalia.documentos.inscricao', $arquivos->inscricoes_id) }}" enctype="multipart/form-data">
+                            @else
+                                <form>
+                            @endif
+                                @csrf
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        @if($inscricao->avaliacao && $inscricao->avaliacao->ficha_avaliacao)
+                                            <a class="btn btn-primary" href="{{route('visualizar.ficha-avaliacao', $inscricao->avaliacao->id)}}" target="_new">
+                                                <div class="btn-group">
+                                                    <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                                    <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Arquivo de pontuação</h6>
+                                                </div>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    @if(auth()->user()->role == "presidenteBancaExaminadora")
+                                        @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
+                                                    date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
+                                            <div class="col-md-12" style="margin-top: 10px; margin-bottom: -15px;">
+                                                <label for="ficha_avaliacao" class="form-label style_campo_titulo">Selecione o arquivo de pontuação</label>
+                                                <input type="file" accept=".pdf" class="form-control form-control-sm @error('ficha_avaliacao') is-invalid @enderror"
+                                                    id="ficha_avaliacao" style="margin-left:-10px;margin-bottom:1rem; border:0px solid #fff"
+                                                    name="ficha_avaliacao" @if ($inscricao->avaliacao && !$inscricao->avaliacao->ficha_avaliacao) required @endif/>
+                                                @error('ficha_avaliacao')
+                                                    <span style="color: red">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        @endif
+                                    @endif
+                                    <hr class="card-body" style="margin-bottom: -30px; margin-right: -15px; margin-left: -15px;"/>
+                                    <div class="col-md-12">
+                                        <div class="form-row">
+                                            <div class="col-md-12 form-group">
+                                                <label for="nota" class="style_campo_titulo">Inserir pontuação da ficha de avaliação (Ex: 10 ou 10.5, etc)</label>
+                                                <input type="number" step=any id="nota" name="nota" min="0" max="100"
+                                                        class="form-control style_campo" placeholder="Digite a pontuação do candidato"
+                                                    @if ($inscricao->avaliacao && !$inscricao->avaliacao->nota)
+                                                        required
+                                                    @endif
+                                                    @if($inscricao->concurso->users_id == auth()->user()->id || $ehChefe == null)
+                                                        disabled
+                                                    @endif
+                                                    @if ($inscricao->avaliacao)
+                                                        value="{{ $inscricao->avaliacao->nota }}"/>
+                                                    @else
+                                                        value="{{ old('nota') }}"/>
+                                                    @endif
+                                            </div>
+                                        </div>
+                                        @if($ehChefe != null)
+                                            @if (date('Y-m-d', strtotime(now())) >= $inscricao->concurso->data_fim_envio_doc && 
+                                                    date('Y-m-d', strtotime(now())) <= $inscricao->concurso->data_resultado_selecao)
+                                                <div class="form-row justify-content-center">
+                                                    <div class="col-md-6 form-group" style="margin-bottom: 2.5px;">
+                                                        <button type="submit" class="btn btn-success shadow-sm" style="width: 100%;" id="submeterFormBotao">Enviar</button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
+
+@if ($arquivos && $arquivos->avaliacao_perfil)
+    <div class="modal fade" id="reprovar-candidato-{{$inscricao->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Indeferir</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-reprova-candidato-{{$inscricao->id}}" method="POST" action="{{route('aprovar-reprovar-candidato.inscricao.avaliacao.perfil', $inscricao->id)}}">
+                        <input type="hidden" name="aprovar" value="false">
+                        @csrf
+                        Tem certeza que deseja indeferir o candidato {{$inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                    <button type="submit" class="btn btn-danger" form="form-reprova-candidato-{{$inscricao->id}}" id="submeterFormBotao">Sim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="aprovar-candidato-{{$inscricao->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Deferir</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-aprova-candidato-{{$inscricao->id}}" method="POST" action="{{ route('aprovar-reprovar-candidato.inscricao.avaliacao.perfil', $inscricao->id) }}">
+                        <input type="hidden" name="aprovar" value="true">
+                        @csrf
+                        Tem certeza que deseja deferir o candidato {{  $inscricao->user->nome . ' ' . $inscricao->user->sobrenome }}?
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                    <button type="submit" class="btn btn-success" form="form-aprova-candidato-{{$inscricao->id}}" id="submeterFormBotao">Sim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
 <script>
     $("input").change(function(){
         if(this.files[0].size > 2097152){

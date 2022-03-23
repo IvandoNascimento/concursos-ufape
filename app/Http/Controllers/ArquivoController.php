@@ -24,6 +24,36 @@ class ArquivoController extends Controller
         $inscricao = Inscricao::find($request->inscricao);
         //$this->authorize('enviarDocumentos', $inscricao);
 
+        if($inscricao->concurso->tipo == Concurso::TIPO_ENUM['efetivo']){
+            Validator::make($request->all(), [
+                'avaliacao_perfil' => 'file|mimes:pdf|max:2048',
+            ], Arquivo::$efetivo_mensagem)->validate();
+
+            if(!$arquivos){
+                $arquivo = new Arquivo();
+                $this->saveDocument($inscricao->concurso->id, $request->inscricao, $request->avaliacao_perfil, 'avaliacao_perfil.pdf');
+                $path = 'concursos/' . $inscricao->concurso->id . '/inscricoes/' . $request->inscricao . '/';
+                $arquivo->avaliacao_perfil = $path . 'avaliacao_perfil.pdf';
+                $arquivo->inscricoes_id = $request->inscricao;
+                $arquivo->save();
+            }else{
+                if ($request->avaliacao_perfil) {
+                    Storage::delete('public/' . $arquivos->avaliacao_perfil);
+                    $arquivos->avaliacao_perfil = $this->saveDocument($inscricao->concurso->id, $request->inscricao, $request->avaliacao_perfil, 'avaliacao_perfil.pdf');
+                }
+                $arquivos->update();
+            }
+            if (auth()->user()->role == "candidato") {
+                Notification::send(auth()->user(), new EnvioDocumentosNotification(auth()->user(), true));
+            }
+            
+            if (auth()->user()->role == "chefeSetorConcursos" || auth()->user()->role == "admin") {
+                return redirect(route('avalia.documentos.inscricao', $inscricao->id))->with(['success' => 'Documento enviado com sucesso.']);
+            }else{
+                return redirect(route('candidato.index'))->with('success', 'Seu documento foi enviado com sucesso.');
+            }
+        }
+
         if (!$arquivos) {
             Validator::make($request->all(), Arquivo::$rules, Arquivo::$messages)->validate();
         } else {
@@ -156,6 +186,9 @@ class ArquivoController extends Controller
             case "Experiencia-profissional":
                 return Storage::disk()->exists('public/' . $arquivos->experiencia_profissional) && $arquivos->experiencia_profissional != null ? response()->file('storage/' . $arquivos->experiencia_profissional) : abort(404);
                 break;
+            case "Avaliacao-perfil":
+                return Storage::disk()->exists('public/' . $arquivos->avaliacao_perfil) && $arquivos->avaliacao_perfil != null ? response()->file('storage/' . $arquivos->avaliacao_perfil) : abort(404);
+            break;
             default:
                 return abort(404);
                 break;

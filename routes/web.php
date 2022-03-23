@@ -67,6 +67,9 @@ Route::middleware(['auth:sanctum', 'verified', 'CheckUserChefeConcurso'])->group
 
     Route::post('/aprovar-reprovar-candidato/inscricao/{inscricao_id}', [ConcursoController::class, 'aprovarReprovarCandidato'])
         ->name('aprovar-reprovar-candidato.inscricao');
+    
+    Route::post('/aprovar-reprovar-candidato-avaliacao-perfil/inscricao/{inscricao_id}', [ConcursoController::class, 'aprovarReprovarCandidatoAvaliacaoPerfil'])
+    ->name('aprovar-reprovar-candidato.inscricao.avaliacao.perfil');
 });
 
 Route::middleware(['auth:sanctum', 'verified', 'CheckUserPresidenteBanca'])->group(function () {
