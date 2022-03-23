@@ -32,7 +32,8 @@ class ConcursoController extends Controller
 
     public function create()
     {
-        return view('concurso.create');
+        $tipos = Concurso::TIPO_ENUM;
+        return view('concurso.create', compact('tipos'));
     }
 
     public function store(StoreConcursoRequest $request)
@@ -65,7 +66,8 @@ class ConcursoController extends Controller
     {
         $concurso = Concurso::find($id);
         $this->authorize('update', $concurso);
-        return view('concurso.edit', compact('concurso'));
+        $tipos = Concurso::TIPO_ENUM;
+        return view('concurso.edit', compact('concurso', 'tipos'));
     }
 
     public function update(StoreConcursoRequest $request, $id)

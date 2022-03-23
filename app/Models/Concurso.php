@@ -11,6 +11,11 @@ class Concurso extends Model
 {
     use HasFactory;
 
+    public const TIPO_ENUM = [
+        'substituto'     => 0,
+        'efetivo'     => 1,
+    ];
+
     protected $fillable = [
         'titulo',
         'qtd_vagas',
@@ -25,7 +30,8 @@ class Concurso extends Model
         'edital_geral',
         'edital_especifico',
         'declaracao_veracidade',
-        'users_id'
+        'users_id',
+        'tipo'
     ];
 
     public function inscricoes()
@@ -56,6 +62,7 @@ class Concurso extends Model
         $this->data_fim_envio_doc               = $request->data_final_para_envio_dos_documentos;
         $this->data_resultado_selecao           = $request->data_do_resultado_do_concurso;
         $this->users_id                         = auth()->user()->id;
+        $this->tipo                             = $request->input('tipo');
     }
 
     public function salvarArquivos(StoreConcursoRequest $request)
