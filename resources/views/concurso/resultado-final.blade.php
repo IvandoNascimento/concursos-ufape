@@ -50,14 +50,51 @@
                         </div>
                         @endforeach
                     @else
-                        <div class="card-body">
-                            <div class="form-row" style="text-align: center;">
-                                <div class="col-md-12" style="margin-top: 5rem; margin-bottom: 10rem;">
-                                    <img src="{{asset('img/img_default_meus_etapas.svg')}}" alt="Imagem default" width="190px">
-                                    <h6 class="style_campo_titulo" style="margin-top: 20px;">Resultado parcial ainda não está disponível.</h6>
+                        @if($concurso->avaliacoesEfetivo()->count() > 0)
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover tabela_container">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="tabela_container_cabecalho_titulo">#</th>
+                                            <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 50%;">Nome</th>
+                                            <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 50%;">Vaga</th>
+                                            <th scope="col" class="tabela_container_cabecalho_titulo">Avaliação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $cont = 1;
+                                        @endphp
+                                        @foreach ($concurso->avaliacoesEfetivo as $avaliacao)
+                                            <tr>
+                                                <th scope="row" id="tabela_container_linha" style="text-align: center; vertical-align: middle;">{{$cont}}</th>
+                                                <td id="tabela_container_linha" style="text-align: center; vertical-align: middle;">{{ $avaliacao->inscricao->user->nome }}</td>
+                                                <td id="tabela_container_linha" style="text-align: center; vertical-align: middle;">{{ $avaliacao->inscricao->vaga->nome }}</td>
+                                                <td id="tabela_container_linha" style="text-align: center; vertical-align: middle;">
+                                                    @if($avaliacao->status == \App\Models\AvaliacaoEfetivo::STATUS_ENUM['deferido'])
+                                                        Deferido
+                                                    @else
+                                                        Indeferido
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @php
+                                            $cont = $cont +1;
+                                        @endphp
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="card-body">
+                                <div class="form-row" style="text-align: center;">
+                                    <div class="col-md-12" style="margin-top: 5rem; margin-bottom: 10rem;">
+                                        <img src="{{asset('img/img_default_meus_etapas.svg')}}" alt="Imagem default" width="190px">
+                                        <h6 class="style_campo_titulo" style="margin-top: 20px;">Resultado parcial ainda não está disponível.</h6>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     @endif    
                 </div>
             </div>

@@ -154,4 +154,16 @@ class ConcursoPolicy
     {
         return $concurso->users_id == $user->id;
     }
+
+    /**
+    * Regra que determina se o usuário é dono do concurso
+    *
+    * @param  \App\Models\User  $user
+    * @param  \App\Models\Inscricao  $inscricao
+    * @return mixed
+    */
+    public function isDonoDoConcurso(User $user, Concurso $concurso)
+    {
+        return $concurso->users_id == $user->id;
+    }
 }

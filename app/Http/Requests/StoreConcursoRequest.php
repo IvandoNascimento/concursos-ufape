@@ -39,6 +39,7 @@ class StoreConcursoRequest extends FormRequest
             'declaração_de_veracidade'                      => 'nullable|file|mimes:pdf,docx|max:2048',
             'opcoes_vaga'                                   => 'required',
             'opcoes_vaga.*'                                 => 'required',
+            'tipo'                                          => 'required',
         ];
     }
 }

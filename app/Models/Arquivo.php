@@ -36,6 +36,12 @@ class Arquivo extends Model
         'experiencia_profissional.mimes'    => 'O arquivo de experiência profissional só pode ser um PDF.',
     ];
 
+    public static $efetivo_mensagem = [
+        'avaliacao_perfil.required'           => 'O arquivo de compatibilidade do perfil é obrigatório.',
+        'avaliacao_perfil.max'                => 'O tamanho máximo do arquivo de compatibilidade do perfil é 2MB.',
+        'avaliacao_perfil.mimes'              => 'O arquivo de compatibilidade do perfil só pode ser um PDF.',
+    ];
+
     protected $fillable = [
         'dados_pessoais',
         'curriculum_vitae_lattes',
@@ -43,7 +49,8 @@ class Arquivo extends Model
         'experiencia_didatica',
         'producao_cientifica',
         'experiencia_profissional',
-        'inscricoes_id'
+        'inscricoes_id',
+        'avalicao_perfil'
     ];
 
     public function inscricao()

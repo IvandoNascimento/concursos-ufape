@@ -116,11 +116,11 @@
                                                             <div style="margin-left: 5px">
                                                                 @if ($inscricao->concurso->data_inicio_envio_doc <= date('Y-m-d', strtotime(now())))
                                                                     <a class="btn btn-primary" href="{{route('avalia.documentos.inscricao', $inscricao->id)}}">
-                                                                        Prova de Títulos
+                                                                        @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])Prova de Títulos @else Compatibilidade do Perfil @endif
                                                                     </a>
                                                                 @else
                                                                     <button class="btn btn-primary" disabled>
-                                                                        Prova de Títulos
+                                                                        @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])Prova de Títulos @else Compatibilidade do Perfil @endif
                                                                     </button>
                                                                 @endif
                                                             </div>

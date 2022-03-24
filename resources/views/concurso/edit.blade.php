@@ -24,11 +24,30 @@
                                 @csrf
                                 <input type="hidden" name="_method" value="PUT">
                                 <div class="form-row">
-                                    <div class="col-sm-8 form-group">
+                                    <div class="col-sm-12 form-group">
                                         <label for="titulo" class="style_campo_titulo">Título <span style="color: red; font-weight: bold;">*</span></label>
                                         <input type="text" class="form-control style_campo @error('título') is-invalid @enderror" id="titulo" name="título" placeholder="Concurso de professores substitutos 2021.1" value="{{old('título') != null ? old('título') : $concurso->titulo}}">
 
                                         @error('título')
+                                            <div id="validationServer03Feedback" class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <label for="tipo" class="style_campo_titulo">{{__('Tipo do concurso')}}<span style="color: red; font-weight: bold;">*</span></label>
+                                        <select name="tipo" id="tipo" class="form-control style_campo @error('tipo') is-invalid @enderror" required>
+                                            <option selected disabled value="">-- Selecione o tipo do concurso --</option>
+                                            @if (old('tipo') != null)
+                                                <option @if(old('tipo') == $tipos['efetivo']) selected @endif value="{{$tipos['efetivo']}}">Efetivo</option>
+                                                <option @if(old('tipo') == $tipos['substituto']) selected @endif value="{{$tipos['substituto']}}">Substituto</option>
+                                            @else
+                                                <option @if($concurso->tipo == $tipos['efetivo']) selected @endif value="{{$tipos['efetivo']}}">Efetivo</option>
+                                                <option @if($concurso->tipo == $tipos['substituto']) selected @endif value="{{$tipos['substituto']}}">Substituto</option>
+                                            @endif
+                                        </select>
+    
+                                        @error('tipo')
                                             <div id="validationServer03Feedback" class="invalid-feedback">
                                                 {{ $message }}
                                             </div>
