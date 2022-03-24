@@ -84,7 +84,7 @@
                                     <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 30%;">Vaga</th>
                                     <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 100%;">Pagamento</th>
                                     <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 100%;">Inscrição</th>
-                                    <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 100%;">Avaliação de Perfil</th>
+                                    <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 100%;">Compatibilidade do Perfil</th>
                                     <th scope="col" class="tabela_container_cabecalho_titulo" style="width: 100%;">Ações</th>
                                 </tr>
                             </thead>
@@ -155,7 +155,7 @@
                                         <img class="card-img-left example-card-img-responsive" src="{{ asset('img/icon_enviar.svg') }}" width="25px" style="margin-top: 7px "/>
                                     </label>
                                     <h6>Prova de Títulos /</h6><br>
-                                    <h6> Avaliação de Perfil</h6>
+                                    <h6> Compatibilidade do Pefil</h6>
                                 </div>
                             @endif
                         </div>

@@ -34,10 +34,10 @@ class AvaliacaoEfetivo extends Model
     {
         switch ($this->status) {
             case AvaliacaoEfetivo::STATUS_ENUM['deferido']:
-                return 'Deferido';
+                return 'Deferida';
                 break;
             case AvaliacaoEfetivo::STATUS_ENUM['indeferido']:
-                return 'Indeferido';
+                return 'Indeferida';
                 break;
             default:
                 break;

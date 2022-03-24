@@ -8,7 +8,7 @@
                     @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])
                         <h6 class="style_card_container_header_titulo">Etapa - Avaliação de Títulos</h6>
                     @else
-                        <h6 class="style_card_container_header_titulo">Etapa - Avaliação de Pefil</h6>
+                        <h6 class="style_card_container_header_titulo">Etapa - Compatibilidade do Perfil</h6>
                     @endif
                     <h6 class="style_card_container_header_campo_obrigatorio"><span style="color: red; font-weight: bold;">*</span> Campo obrigatório</h6>
                 </div>
@@ -179,34 +179,16 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-1s2">
                                         <h6 style="text-align:justify;">
-                                            Os documentos devem estar legíveis, devidamente escaneados e em PDF. As versões escaneadas devem
-                                            ser enviadas em seis (1) arquivos, com tamanho máximo de cada arquivo: 2MB.
+                                            O documento deve estar legível, devidamente escaneado e em PDF. A versão escaneada deve
+                                            ser enviada em um (1) arquivo, com tamanho máximo de 2MB.
                                         </h6>
                                     </div>
                                     <div class="form-group col-md-12">
-                                        <label for="avaliacao_perfil" class="style_campo_titulo" style="color: black; font-weight: bolder;"><span style="color: red; font-weight: bold;">*</span> Documentos Pessoais</label>
+                                        <label for="avaliacao_perfil" class="style_campo_titulo" style="color: black; font-weight: bolder;"><span style="color: red; font-weight: bold;">*</span> Anexar Documentos:</label>
                                         @if($arquivos && $arquivos->avaliacao_perfil) <a href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Avaliacao-perfil"])}}" target="_blank"><img src="{{asset('img/file-pdf-solid.svg')}}" alt="arquivo atual" style="width: 16px;"></a> @endif
                                         <h6 class="style_subtitulo_documento" style="color: black">
                                             <ul>
-                                                <li>Carteira de Identidade ou do Documento de Identidade Profissional (Conselhos de Classes) ou da Carteira Nacional de Habilitação – CNH.</li>
-                                                <li>Cópia autenticada do Passaporte ou de Cédula de Identidade de Estrangeiro, caso o candidato seja estrangeiro.</li>
-                                                <li>Cartão do Cadastro de Pessoa Física - CPF (dispensado para o candidato estrangeiro).</li>
-                                                <li>Certidão de quitação eleitoral (emitida pelo site do TRE ou cartório eleitoral).</li>
-                                                <li>Documento comprobatório da quitação com serviço militar, para os candidatos do sexo masculino a partir de 1º dia de janeiro
-                                                    do ano em completar 18 (dezoito) anos de idade até 31 de dezembro do ano em que completar 45 (quarenta e cinco) anos.
-                                                </li>
-                                                <li>Documento oficial que comprove que o candidato não possui antecedentes criminais.</li>
-                                                <li>Comprovante do pagamento da taxa de inscrição.</li>
-                                                <li>Documento que comprove a formação na área/matéria conforme Edital Específico.
-                                                    A formação acadêmica pode ser comprovada através de cópias de documentos como: i) Certificado de Graduação e/ou
-                                                    Mestrado e/ou Doutorado conforme exigência para a vaga, emitido pela Instituição de Ensino Superior;
-                                                    ii) OU diploma de Graduação E/OU Mestrado E/OU Doutorado conforme exigência para a vaga,
-                                                    emitido pela Instituição de Ensino Superior.
-                                                </li>
-                                                <li>Histórico Escolar em que se verifique que o candidato cursou a disciplina objeto da seleção OU
-                                                    disciplina(s) equivalente(s) à matéria objeto da seleção.
-                                                </li>
-                                                <li>Declaração de Veracidade documental.</li>
+                                                <li>Cópias de documentos que comprovem a Compatibilidade do Perfil referente à(s) área(s)/subáreas à(s) qual(is) está concorrendo (Edital das Condições Gerais - item 6.2.1).</li>
                                             </ul>
                                         </h6>
                                         <input type="file" accept=".pdf" class="form-control style_campo @error('avaliacao_perfil') is-invalid @enderror"

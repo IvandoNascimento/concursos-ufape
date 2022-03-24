@@ -9,12 +9,12 @@
                     @if($inscricao->concurso->tipo == \App\Models\Concurso::TIPO_ENUM['substituto'])
                         <h6 class="style_card_container_header_titulo">Etapa - Prova de Títulos</h6>
                     @else
-                        <h6 class="style_card_container_header_titulo">Etapa - Avaliação de Pefil
+                        <h6 class="style_card_container_header_titulo">Etapa - Compatibilidade do Perfil
                             @if($inscricao->avaliacaoEfetivo()->first() != null) 
                                 @if($inscricao->avaliacaoEfetivo->status == \App\Models\AvaliacaoEfetivo::STATUS_ENUM['deferido'])
-                                    (Deferido)
+                                    (Deferida)
                                 @else
-                                    (Indeferido)
+                                    (Indeferida)
                                 @endif
                             @endif
                         </h6>

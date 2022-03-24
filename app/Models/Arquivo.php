@@ -37,9 +37,9 @@ class Arquivo extends Model
     ];
 
     public static $efetivo_mensagem = [
-        'avaliacao_perfil.required'           => 'O arquivo de avaliação de perfil é obrigatório.',
-        'avaliacao_perfil.max'                => 'O tamanho máximo do arquivo de avaliação de perfil é 2MB.',
-        'avaliacao_perfil.mimes'              => 'O arquivo de avaliação de perfil só pode ser um PDF.',
+        'avaliacao_perfil.required'           => 'O arquivo de compatibilidade do perfil é obrigatório.',
+        'avaliacao_perfil.max'                => 'O tamanho máximo do arquivo de compatibilidade do perfil é 2MB.',
+        'avaliacao_perfil.mimes'              => 'O arquivo de compatibilidade do perfil só pode ser um PDF.',
     ];
 
     protected $fillable = [
