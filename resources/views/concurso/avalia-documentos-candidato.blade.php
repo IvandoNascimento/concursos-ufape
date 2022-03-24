@@ -252,6 +252,16 @@
                                 </div>
                             </div>
                         @else
+                            <div class="row">
+                                <div class="col-md-12" style="text-align: right">
+                                    <a class="btn btn-primary" href="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Avaliacao-perfil"])}}" target="_new">
+                                        <div class="btn-group">
+                                            <img src="{{asset('img/icon_arquivo_download_branco.svg')}}" style="width:15px">
+                                            <h6 style="margin-left: 10px; margin-top:5px; color:#fff">Nova aba</h6>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="d-flex align-items-center my-2 pt-1 pb-3">
                                 <iframe id="documentoPerfilIframe" allowtransparency="true" src="{{route('visualizar.arquivo', ['arquivo' => $arquivos->id, 'cod' => "Avaliacao-perfil"])}}" width="100%" height="700"  frameborder="0"></iframe>
                             </div>

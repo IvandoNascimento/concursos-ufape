@@ -31,9 +31,7 @@ class ArquivoController extends Controller
 
             if(!$arquivos){
                 $arquivo = new Arquivo();
-                $this->saveDocument($inscricao->concurso->id, $request->inscricao, $request->avaliacao_perfil, 'avaliacao_perfil.pdf');
-                $path = 'concursos/' . $inscricao->concurso->id . '/inscricoes/' . $request->inscricao . '/';
-                $arquivo->avaliacao_perfil = $path . 'avaliacao_perfil.pdf';
+                $arquivo->avaliacao_perfil = $this->saveDocument($inscricao->concurso->id, $request->inscricao, $request->avaliacao_perfil, 'avaliacao_perfil.pdf');
                 $arquivo->inscricoes_id = $request->inscricao;
                 $arquivo->save();
             }else{
@@ -188,7 +186,7 @@ class ArquivoController extends Controller
                 break;
             case "Avaliacao-perfil":
                 return Storage::disk()->exists('public/' . $arquivos->avaliacao_perfil) && $arquivos->avaliacao_perfil != null ? response()->file('storage/' . $arquivos->avaliacao_perfil) : abort(404);
-            break;
+                break;
             default:
                 return abort(404);
                 break;

@@ -29,4 +29,18 @@ class AvaliacaoEfetivo extends Model
     {
         return $this->belongsTo(Concurso::class, 'concurso_id');
     }
+
+    public function getStatusAvaliacao()
+    {
+        switch ($this->status) {
+            case AvaliacaoEfetivo::STATUS_ENUM['deferido']:
+                return 'Deferido';
+                break;
+            case AvaliacaoEfetivo::STATUS_ENUM['indeferido']:
+                return 'Indeferido';
+                break;
+            default:
+                break;
+        }
+    }
 }

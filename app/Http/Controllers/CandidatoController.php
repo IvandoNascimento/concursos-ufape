@@ -29,8 +29,19 @@ class CandidatoController extends Controller
 
     public function index()
     {
-        $inscricoes = Inscricao::where('users_id', Auth::user()->id)->get();
-        return view('candidato.index', compact('inscricoes'));
+        $inscricoes = Inscricao::select('inscricoes.*')
+        ->join('users','inscricoes.users_id','=','users.id')
+        ->join('concursos', 'inscricoes.concursos_id', '=', 'concursos.id')
+        ->whereIn('concursos.tipo', [Concurso::TIPO_ENUM['substituto']])
+        ->get();
+
+        $inscricoesEfetivo = Inscricao::select('inscricoes.*')
+        ->join('users','inscricoes.users_id','=','users.id')
+        ->join('concursos', 'inscricoes.concursos_id', '=', 'concursos.id')
+        ->whereIn('concursos.tipo', [Concurso::TIPO_ENUM['efetivo']])
+        ->get();
+
+        return view('candidato.index', compact('inscricoes', 'inscricoesEfetivo'));
     }
 
     public function show($id)
