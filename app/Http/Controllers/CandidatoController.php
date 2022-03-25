@@ -32,12 +32,14 @@ class CandidatoController extends Controller
         $inscricoes = Inscricao::select('inscricoes.*')
         ->join('users','inscricoes.users_id','=','users.id')
         ->join('concursos', 'inscricoes.concursos_id', '=', 'concursos.id')
+        ->where('inscricoes.users_id', auth()->user()->id)
         ->whereIn('concursos.tipo', [Concurso::TIPO_ENUM['substituto']])
         ->get();
 
         $inscricoesEfetivo = Inscricao::select('inscricoes.*')
         ->join('users','inscricoes.users_id','=','users.id')
         ->join('concursos', 'inscricoes.concursos_id', '=', 'concursos.id')
+        ->where('inscricoes.users_id', auth()->user()->id)
         ->whereIn('concursos.tipo', [Concurso::TIPO_ENUM['efetivo']])
         ->get();
 
