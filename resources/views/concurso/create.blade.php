@@ -195,6 +195,43 @@
                                             </div>
                                         @enderror
                                     </div>
+                                    <div class="col-sm-12 form-group">
+                                        <div class="card shadow bg-white style_card_container">
+                                            <div class="card-header d-flex justify-content-between bg-white" id="style_card_container_header">
+                                                <h6 class="style_card_container_header_titulo">Documentos extras</h6>
+                                                <button type="button" id="btn-adicionar-escolhar" onclick="addDoc()" class="btn btn-primary" style="margin-top:10px;">Adicionar documento</button>
+                                            </div>
+                                            <input type="hidden" id="docs_indice" value="-1">
+                                            <div class="card-body">
+                                                <div id="docs" class="row">
+                                                    @if(old('docsExtras') != null)
+                                                        <input type="hidden" id="docs_indice" value="{{count(old('docsExtras'))-1}}">
+                                                        @foreach (old('docsExtras') as $doc)
+                                                            <div class="col-sm-5 form-group" style="border: 1px solid #ced4da; border-radius: 10px; padding: 20px; margin-left: 35px; margin-right: 25px;">
+                                                                <label class="style_campo_titulo">Nome do documento</label>
+                                                                <input class="form-control style_campo @error('docsExtras.*') is-invalid @enderror" type="text"  name="docsExtras[]" value="{{$doc}}">
+
+                                                                @error('docsExtras.*')
+                                                                    <div id="validationServer03Feedback" class="invalid-feedback">
+                                                                        {{ $message }}
+                                                                    </div>
+                                                                @enderror
+                                                                <input type="file" accept=".pdf" name="arquivos[]" id="file-input-" required class="form-control style_campo @error('arquivos.*') is-invalid @enderror">
+                                                                @error('arquivos.*')
+                                                                    <div id="validationServer03Feedback" class="invalid-feedback">
+                                                                        {{ $message }}
+                                                                    </div>
+                                                                @enderror
+                                                                <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger" style="margin-top: 10px;">Excluir</button>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <input type="hidden" id="docs_indice" value="-1">
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-12" style="margin-bottom: 5px;">
                                     <hr>
@@ -225,5 +262,40 @@
                             </div>`;
             $('#opcoes').append(escolha);
         }
+
+        function addDoc() {
+            var indice = document.getElementById("docs_indice");
+            var doc_indice = parseInt(document.getElementById("docs_indice").value)+1;
+            indice.value = doc_indice;
+
+            var doc = `<div class="col-sm-5 form-group" style="border: 1px solid #ced4da; border-radius: 10px; padding: 20px; margin-left: 35px; margin-right: 25px;">
+                            <label class="style_campo_titulo">Nome do documento <span style="color: red; font-weight: bold;">*</span></label>
+                            <input class="form-control style_campo @error('docsExtras.*') is-invalid @enderror" type="text" name="docsExtras[]" required>
+
+                            @error('docsExtras.*')
+                                <div id="validationServer03Feedback" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                            <label class="style_campo_titulo">Anexo <span style="color: red; font-weight: bold;">*</span></label>
+                            <input type="file" accept=".pdf" name="arquivos[]" id="file-input-`+doc_indice+`" required class="form-control style_campo @error('arquivos.*') is-invalid @enderror">
+                            @error('arquivos.*')
+                                <div id="validationServer03Feedback" class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                            <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger" style="margin-top: 10px;">Excluir</button>
+                        </div>`;
+            $('#docs').append(doc);
+        }
+    </script>
+
+    <script>
+        $("input").change(function(){
+            if(this.files[0].size > 2097152){
+                alert("O arquivo deve ter no máximo 2MB!");
+                this.value = "";
+            };
+        });
     </script>
 @endsection

@@ -49,10 +49,10 @@ class ResultadoController extends Controller
         $this->authorize('isDonoDoConcurso', $concurso);
 
         $request->validated();
-        $nota = new Resultado();
-        $nota->setAtributes($request, $concurso);
-        $nota->save();
-        $nota->salvarAnexo($request->arquivo);
+        $resultado = new Resultado();
+        $resultado->setAtributes($request, $concurso);
+        $resultado->save();
+        $resultado->salvarAnexo($request->arquivo);
         
         return redirect(route('resultados.index', ['concurso' => $concurso]))->with(['success' => "Resultado publicado com sucesso!"]);
     }

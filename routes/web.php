@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () {
 });
 Route::get('/notas/{nota}/anexo', [NotasController::class, 'anexo'])->name('notas.anexo');
 Route::get('/resultados/{resultado}/anexo', [ResultadoController::class, 'anexo'])->name('resultados.anexo');
+Route::get('/docsExtras/{doc}/anexo', [ConcursoController::class, 'anexo'])->name('docExtra.anexo');
 
 Route::get('/notas-do-concurso', [NotasController::class, 'get'])->name('notas.get');
 Route::get('/error/403', [Controller::class, 'unauthorized']);
