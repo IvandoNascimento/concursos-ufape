@@ -11,6 +11,7 @@ use App\Models\Inscricao;
 use App\Models\OpcoesVagas;
 use App\Models\NotaDeTexto;
 use App\Models\Candidato;
+use App\Models\DocumentoExtra;
 use App\Models\MembroBanca;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -39,6 +40,26 @@ class ConcursoController extends Controller
 
     public function store(StoreConcursoRequest $request)
     {
+        if($request->docsExtras != null){
+            $input_data = $request->all();
+
+            $validator = Validator::make(
+                $input_data, [
+                'arquivos.*' => 'required|mimes:pdf|max:2048',
+                'docsExtras.*' =>  'required|max:200'
+                ],[
+                    'arquivos.*.required' => 'O arquivo é obrigatório.',
+                    'arquivos.*.mimes' => 'O tamanho máximo do arquivo é 2MB.',
+                    'arquivos.*.max' => 'O arquivo só pode ser um PDF.',
+                    'docsExtras.*.required' => 'O nome do arquivo é obrigatório.',
+                    'docsExtras.*.max' => 'O tamanho máximo do nome do arquivo é de 200 caracteres.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect()->back()->withInput();
+            }
+        }
         $request->validated();
         $concurso = new Concurso;
         $concurso->setAtributes($request);
@@ -46,7 +67,30 @@ class ConcursoController extends Controller
         $concurso->salvarArquivos($request);
         $concurso->update();
         OpcoesVagas::criarOpcoesVagas($concurso, $request->opcoes_vaga);
+        if($request->docsExtras != null){
+            $this->adicionarDocsExtras($concurso, $request->docsExtras, $request->arquivos);
+        }
         return redirect(route('concurso.index'))->with(['mensage' => 'Concurso criado com sucesso!']);
+    }
+
+    private function adicionarDocsExtras(Concurso $concurso, $docsExtras, $arquivos)
+    {
+        foreach ($docsExtras as $i => $documento) {
+            $doc = new DocumentoExtra();
+            $doc->nome = $documento;
+            $doc->concurso_id = $concurso->id;
+            $doc->save();
+            $doc->salvarAnexo($arquivos[$i], $documento);
+        }
+    }
+
+    public function anexo(DocumentoExtra $doc) 
+    {
+        if ($doc->arquivo != null && Storage::disk()->exists('public/'.$doc->arquivo)) {
+            return response()->file("storage/".$doc->arquivo);
+        }
+
+        return abort(404);
     }
 
     public function show($id)
@@ -76,6 +120,73 @@ class ConcursoController extends Controller
         $request->validated();
         $concurso = Concurso::find($id);
         $this->authorize('update', $concurso);
+        if($request->docsExtras != null){
+            $input_data = $request->all();
+
+            $validator = Validator::make(
+                $input_data, [
+                'arquivos.*' => 'required|mimes:pdf|max:2048',
+                'docsExtras.*' =>  'required|max:200'
+                ],[
+                    'arquivos.*.required' => 'O arquivo é obrigatório.',
+                    'arquivos.*.mimes' => 'O tamanho máximo do arquivo é 2MB.',
+                    'arquivos.*.max' => 'O arquivo só pode ser um PDF.',
+                    'docsExtras.*.required' => 'O nome do arquivo é obrigatório.',
+                    'docsExtras.*.max' => 'O tamanho máximo do nome do arquivo é de 200 caracteres.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return redirect()->back()->withInput();
+            }
+        }
+        if($request->docsID != null){
+            $docsEditados = DocumentoExtra::whereIn('id', $request->docsID)->get();
+            $indice = count($request->docsID);
+        }else{
+            $docsEditados = collect();
+            $indice = 0;
+        }
+        $docsExcluidos = $concurso->documentosExtras->diff($docsEditados);
+        if($request->docsExtras != null){
+            if(count($request->docsExtras) - $docsEditados->count()!= 0){
+                $docsNovos = array_slice($request->docsExtras, -(count($request->docsExtras) - $docsEditados->count()));
+            }else{
+                $docsNovos = collect();
+            }
+        }else{
+            $docsNovos = collect();
+            $indice = 0;
+        }
+        
+
+        foreach($docsNovos as $i => $nome){
+            $doc = new DocumentoExtra();
+            $doc->nome = $nome;
+            $doc->concurso_id = $concurso->id;
+            $doc->save();
+            $doc->salvarAnexo($request->arquivos[$indice+$i], $nome);
+        }
+
+        //Editando docs extras//
+        if ($docsEditados != null && $docsEditados->count() > 0) {
+            foreach($request->docsID as $i => $id) {
+                $doc = DocumentoExtra::find($id);
+                $doc->nome = $request->docsExtras[$i];
+                if($request->arquivos != null && array_key_exists($i, $request->arquivos)){
+                    $doc->salvarAnexo($request->arquivos[$i], $doc->nome);
+                }
+                $doc->update();
+            }
+        }
+
+        //Excluindo docs
+        if ($docsExcluidos != null && $docsExcluidos->count() > 0) {
+            foreach ($docsExcluidos as $doc) {
+                $doc->deletar();
+            }
+        }
+
         $opcoesEditadas = OpcoesVagas::whereIn('id', $request->opcoes_id)->get();
         $opcoesExcluidas = $concurso->vagas->diff($opcoesEditadas);
         if ($opcoesExcluidas != null && $opcoesExcluidas->count() > 0 && $this->podeExcluir($opcoesExcluidas)) {
@@ -131,6 +242,10 @@ class ConcursoController extends Controller
         }
 
         OpcoesVagas::deletarOpcoesVagas($concurso);
+
+        foreach($concurso->documentosExtras as $doc){
+            $doc->deletar();
+        }
 
         $concurso->deletar();
 

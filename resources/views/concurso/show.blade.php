@@ -284,13 +284,78 @@
                                                     <img class="" src="{{asset('img/file-download-solid.svg')}}" style="width:20px"><br>
                                                     Baixar</a>
                                                 </div>
+                                              </div>
                                             </div>
                                         </div>
-                                    </div>
                                 @else
                                     <h6 style="color: #909090">O criador do concurso não disponibilizou o documento de veracidade</h6>
                                 @endif
                             </div>
+                            @php
+                                $cores = ['rgb(84, 172, 255)', 'rgb(255, 104, 84)', 'rgb(207, 159, 0)']
+                            @endphp
+                            @foreach ($concurso->documentosExtras as $i => $doc)
+                              @if($i < 2)
+                                <div class="col-md-12"><hr></div>
+                                
+                                <div class="col-md-12">
+                                  <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
+                                        <div style="margin-right:10px; margin-top:-15px">
+                                            <img style="border:7px solid {{$cores[$i%3]}}; border-radius: 50%;"  class="" src="{{asset('img/icon_edital_fill.png')}}" alt="" width="40px">
+                                        </div>
+                                        <div class="form-group" style="width: 100%">
+                                            <div class="d-flex justify-content-between" style="width: 100%">
+                                                <div><h5 style=" font-size:19px; margin-top:20px">{{$doc->nome}}</h5></div>
+                                                <div style="float: right">
+                                                  <a class="btn btn-light" href="{{route('docExtra.anexo', ['doc' => $doc])}}" target="_new" style="" >
+                                                      <img class="" src="{{asset('img/file-download-solid.svg')}}" style="width:20px"><br>
+                                                      Baixar
+                                                  </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              @endif
+                            @endforeach
+
+                            @if($concurso->documentosExtras->count() >= 3)
+                                    
+                              @foreach ($concurso->documentosExtras as $i => $doc)
+                                @if($i >= 2)
+                                  <div class="col-md-12"><hr></div>
+                                  
+                                  <div class="col-md-12">
+                                    <div class="d-flex justify-content-left align-items-center" style="margin-bottom: -15px">
+                                          <div style="margin-right:10px; margin-top:-15px">
+                                              <img style="border:7px solid {{$cores[$i%3]}}; border-radius: 50%;"  class="" src="{{asset('img/icon_edital_fill.png')}}" alt="" width="40px">
+                                          </div>
+                                          <div class="form-group" style="width: 100%">
+                                              <div class="d-flex justify-content-between" style="width: 100%">
+                                                  <div><h5 style=" font-size:19px; margin-top:20px">{{$doc->nome}}</h5></div>
+                                                  <div style="float: right">
+                                                    <a class="btn btn-light" href="{{route('docExtra.anexo', ['doc' => $doc])}}" target="_new" style="" >
+                                                        <img class="" src="{{asset('img/file-download-solid.svg')}}" style="width:20px"><br>
+                                                        Baixar
+                                                    </a>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                @endif
+                              @endforeach
+                              {{--<div class="row">
+                                <div class="col-md-6" style="text-align: right">
+                                </div>
+                                <div class="col-md-6">
+                                  <a id="resultadosBoxDocs" onclick="alterarMenosDocs()" data-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="false" aria-controls="collapseTwo">
+                                    Mostrar mais
+                                  </a>
+                                  <input type="hidden" id="resultadoFlagDocs" value="0">
+                                </div>
+                              </div>--}}
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -416,6 +481,18 @@
       }else{
         box.innerHTML = "Mostrar mais";
         document.getElementById('resultadoFlag').value = 0;
+      }
+    }
+
+    function alterarMenosDocs() {
+      resultadoFlag = document.getElementById('resultadoFlagDocs').value;
+      box = document.getElementById('resultadosBoxDocs');
+      if(resultadoFlag == 0){
+        box.innerHTML = "Mostrar menos";
+        document.getElementById('resultadoFlagDocs').value = 1;
+      }else{
+        box.innerHTML = "Mostrar mais";
+        document.getElementById('resultadoFlagDocs').value = 0;
       }
     }
 
