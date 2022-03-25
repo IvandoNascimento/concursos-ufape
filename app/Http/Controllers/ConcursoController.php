@@ -140,15 +140,26 @@ class ConcursoController extends Controller
                 return redirect()->back()->withInput();
             }
         }
-        $docsEditados = DocumentoExtra::whereIn('id', $request->docsID)->get();
+        if($request->docsID != null){
+            $docsEditados = DocumentoExtra::whereIn('id', $request->docsID)->get();
+            $indice = count($request->docsID);
+        }else{
+            $docsEditados = collect();
+            $indice = 0;
+        }
         $docsExcluidos = $concurso->documentosExtras->diff($docsEditados);
-        if(count($request->docsExtras) - $docsEditados->count()!= 0){
-            $docsNovos = array_slice($request->docsExtras, -(count($request->docsExtras) - $docsEditados->count()));
+        if($request->docsExtras != null){
+            if(count($request->docsExtras) - $docsEditados->count()!= 0){
+                $docsNovos = array_slice($request->docsExtras, -(count($request->docsExtras) - $docsEditados->count()));
+            }else{
+                $docsNovos = collect();
+            }
         }else{
             $docsNovos = collect();
+            $indice = 0;
         }
+        
 
-        $indice = count($request->docsID);
         foreach($docsNovos as $i => $nome){
             $doc = new DocumentoExtra();
             $doc->nome = $nome;
