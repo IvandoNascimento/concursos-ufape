@@ -22,7 +22,7 @@
                                     <div class="form-group col-md-1s2">
                                         <h6 style="text-align:justify;">
                                             Os documentos devem estar legíveis, devidamente escaneados e em PDF. As versões escaneadas devem
-                                            ser enviadas em seis (06) arquivos, com tamanho máximo de cada arquivo: 2MB.
+                                            ser enviadas em seis (06) arquivos, com tamanho máximo de cada arquivo: 15MB.
                                         </h6>
                                     </div>
                                     <div class="form-group col-md-12">
@@ -180,7 +180,7 @@
                                     <div class="form-group col-md-1s2">
                                         <h6 style="text-align:justify;">
                                             O documento deve estar legível, devidamente escaneado e em PDF. A versão escaneada deve
-                                            ser enviada em um (1) arquivo, com tamanho máximo de 2MB.
+                                            ser enviada em um (1) arquivo, com tamanho máximo de 15MB.
                                         </h6>
                                     </div>
                                     <div class="form-group col-md-12">
@@ -228,8 +228,9 @@
 </div>
 <script>
     $("input").change(function(){
-        if(this.files[0].size > 2097152){
-            alert("O arquivo deve ter no máximo 2MB!");
+        const fileSize = this.files[0].size / 1024 / 1024;
+        if(fileSize > 15){
+            alert("O arquivo deve ter no máximo 15MB!");
             this.value = "";
         };
     });
