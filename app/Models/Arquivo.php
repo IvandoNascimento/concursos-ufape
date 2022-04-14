@@ -20,25 +20,25 @@ class Arquivo extends Model
 
     public static $messages = [
         'dados_pessoais.required'           => 'O arquivo de dados pessoais é obrigatório.',
-        'dados_pessoais.max'                => 'O tamanho máximo do arquivo de dados pessoais são 2MB.',
+        'dados_pessoais.max'                => 'O tamanho máximo do arquivo de dados pessoais são 15MB.',
         'dados_pessoais.mimes'              => 'O arquivo de dados pessoais só pode ser um PDF.',
         'curriculum_vitae_lattes.required'  => 'O arquivo de currículo lattes é obrigatório.',
-        'curriculum_vitae_lattes.max'       => 'O tamanho máximo do arquivo de currículo lattes são 2MB.',
+        'curriculum_vitae_lattes.max'       => 'O tamanho máximo do arquivo de currículo lattes são 15MB.',
         'curriculum_vitae_lattes.mimes'     => 'O arquivo de currículo lattes só pode ser um PDF.',
         'formacao_academica.required'       => 'O arquivo de formação acadêmica é obrigatório.',
-        'formacao_academica.max'            => 'O tamanho máximo do arquivo de formação acadêmica são 2MB.',
+        'formacao_academica.max'            => 'O tamanho máximo do arquivo de formação acadêmica são 15MB.',
         'formacao_academica.mimes'          => 'O arquivo de formação acadêmica só pode ser um PDF.',
-        'experiencia_didatica.max'          => 'O tamanho máximo do arquivo de experiência didática são 2MB.',
+        'experiencia_didatica.max'          => 'O tamanho máximo do arquivo de experiência didática são 15MB.',
         'experiencia_didatica.mimes'        => 'O arquivo de experiência didática só pode ser um PDF.',
-        'producao_cientifica.max'           => 'O tamanho máximo do arquivo de produção didática são 2MB.',
+        'producao_cientifica.max'           => 'O tamanho máximo do arquivo de produção didática são 15MB.',
         'producao_cientifica.mimes'         => 'O arquivo de produção didática só pode ser um PDF.',
-        'experiencia_profissional.max'      => 'O tamanho máximo do arquivo de experiência profissional são 2MB.',
+        'experiencia_profissional.max'      => 'O tamanho máximo do arquivo de experiência profissional são 15MB.',
         'experiencia_profissional.mimes'    => 'O arquivo de experiência profissional só pode ser um PDF.',
     ];
 
     public static $efetivo_mensagem = [
         'avaliacao_perfil.required'           => 'O arquivo de compatibilidade do perfil é obrigatório.',
-        'avaliacao_perfil.max'                => 'O tamanho máximo do arquivo de compatibilidade do perfil é 2MB.',
+        'avaliacao_perfil.max'                => 'O tamanho máximo do arquivo de compatibilidade do perfil é 15MB.',
         'avaliacao_perfil.mimes'              => 'O arquivo de compatibilidade do perfil só pode ser um PDF.',
     ];
 
