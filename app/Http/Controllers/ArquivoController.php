@@ -26,7 +26,7 @@ class ArquivoController extends Controller
 
         if($inscricao->concurso->tipo == Concurso::TIPO_ENUM['efetivo']){
             Validator::make($request->all(), [
-                'avaliacao_perfil' => 'file|mimes:pdf|max:2048',
+                'avaliacao_perfil' => 'file|mimes:pdf|max:15360',
             ], Arquivo::$efetivo_mensagem)->validate();
 
             if(!$arquivos){
@@ -56,12 +56,12 @@ class ArquivoController extends Controller
             Validator::make($request->all(), Arquivo::$rules, Arquivo::$messages)->validate();
         } else {
             Validator::make($request->all(), [
-                'dados_pessoais'           => 'nullable|file|mimes:pdf|max:2048',
-                'curriculum_vitae_lattes'  => 'nullable|file|mimes:pdf|max:2048',
-                'formacao_academica'       => 'nullable|file|mimes:pdf|max:2048',
-                'experiencia_didatica'     => 'nullable|file|mimes:pdf|max:2048',
-                'producao_cientifica'      => 'nullable|file|mimes:pdf|max:2048',
-                'experiencia_profissional' => 'nullable|file|mimes:pdf|max:2048',
+                'dados_pessoais'           => 'nullable|file|mimes:pdf|max:15360',
+                'curriculum_vitae_lattes'  => 'nullable|file|mimes:pdf|max:15360',
+                'formacao_academica'       => 'nullable|file|mimes:pdf|max:15360',
+                'experiencia_didatica'     => 'nullable|file|mimes:pdf|max:15360',
+                'producao_cientifica'      => 'nullable|file|mimes:pdf|max:15360',
+                'experiencia_profissional' => 'nullable|file|mimes:pdf|max:15360',
             ], Arquivo::$messages)->validate();
         }
 
@@ -185,7 +185,7 @@ class ArquivoController extends Controller
                 return Storage::disk()->exists($arquivos->experiencia_profissional) && $arquivos->experiencia_profissional != null ? response()->file(storage_path('app/'.$arquivos->experiencia_profissional)) : abort(404);
                 break;
             case "Avaliacao-perfil":
-                return Storage::disk()->exists('public/' . $arquivos->avaliacao_perfil) && $arquivos->avaliacao_perfil != null ? response()->file('storage/' . $arquivos->avaliacao_perfil) : abort(404);
+                return Storage::disk()->exists($arquivos->avaliacao_perfil) && $arquivos->avaliacao_perfil != null ? response()->file(storage_path('app/'.$arquivos->avaliacao_perfil)) : abort(404);
                 break;
             default:
                 return abort(404);
